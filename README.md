@@ -157,6 +157,8 @@ Sesuai instruksi dan standar akademik, dokumen laporan resmi UTS PPSI telah dibu
    [`LAPORAN_AUDIT_SECURITY_SIPANDU_UTS_MUTIA_AFIF_24311124.docx`](file:///d:/PPSI%20(sir%20erliyan)/UTS%20PPSI%20-%20MUTIA%20AFIF%2024311124/LAPORAN_AUDIT_SECURITY_SIPANDU_UTS_MUTIA_AFIF_24311124.docx) *(Evaluasi OWASP Top 10, Threat Modeling, Proteksi Data Pribadi Tanpa NIK, Argon2id, Strip Metadata EXIF, Lembar Pengesahan)*
 4. 📄 **Laporan Perbaikan Hasil Audit Keamanan (Dokumen Security Remediation & Hardening):**  
    [`LAPORAN_PERBAIKAN_HASIL_AUDIT_SECURITY_SIPANDU_UTS_MUTIA_AFIF_24311124.docx`](file:///d:/PPSI%20(sir%20erliyan)/UTS%20PPSI%20-%20MUTIA%20AFIF%2024311124/LAPORAN_PERBAIKAN_HASIL_AUDIT_SECURITY_SIPANDU_UTS_MUTIA_AFIF_24311124.docx) *(Tindak lanjut pengerasan sistem: Middleware Security Headers HTTP, Deep Magic Bytes MIME Inspection via infer::is_image, pembatasan buffer input, pengerasan SameSite=Lax cookie logout, dan verifikasi ulang 100% lulus)*
+5. 📄 **Laporan Formal Deployment Vercel (Dokumen Cloud Implementation Langkah 10 UTS):**  
+   [`LAPORAN_DEPLOYMENT_VERCEL_SIPANDU_UTS_MUTIA_AFIF_24311124.docx`](file:///d:/PPSI%20(sir%20erliyan)/UTS%20PPSI%20-%20MUTIA%20AFIF%2024311124/LAPORAN_DEPLOYMENT_VERCEL_SIPANDU_UTS_MUTIA_AFIF_24311124.docx) *(Publikasi Cloud Vercel Global Edge Network, Konfigurasi vercel.json, Log Eksekusi CLI, Uji Aksesibilitas 100% Berhasil pada https://sipandu-smart-city.vercel.app, dan Lembar Pengesahan)*
 
 ---
 

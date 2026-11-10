@@ -14,6 +14,8 @@
 | **Dosen Pengampu** | **Dr. Erliyan Redy Susanto, M.Kom** |
 | **Institusi** | Program Studi Sistem Informasi, Universitas Teknokrat Indonesia |
 | **Wilayah Layanan** | Kota Bandar Lampung, Provinsi Lampung |
+| **Repositori GitHub** | [https://github.com/Mutia-afif/sipandu-smart-city](https://github.com/Mutia-afif/sipandu-smart-city) |
+| **Live Deploy Vercel** | [https://sipandu-smart-city.vercel.app](https://sipandu-smart-city.vercel.app) |
 | **Tahun Proyek** | 2026 |
 
 ---

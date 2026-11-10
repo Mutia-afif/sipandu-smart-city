@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Masuk - SIPANDU Smart City{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-10 bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-[#E2E8F0]">
+  <!-- Dual Branding Emblems: Pemda Kota Bandar Lampung & Universitas Teknokrat Indonesia -->
+  <div class="text-center mb-6">
+    <div class="flex items-center justify-center gap-4 mb-3">
+      <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung" class="h-14 w-auto object-contain">
+      <div class="h-8 w-px bg-[#E2E8F0]"></div>
+      <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia" class="h-14 w-auto object-contain">
+    </div>
+    <span class="text-[10px] font-bold uppercase tracking-widest text-secondary block">Kolaborasi Akademik & Pemda</span>
+    <h1 class="text-2xl font-extrabold text-primary mt-1">Masuk ke SIPANDU</h1>
+    <p class="text-xs text-on-surface-variant mt-1">Sistem Pengaduan dan Penanganan Infrastruktur Kota Terpadu Kota Bandar Lampung</p>
+  </div>
+
+  {% if error_msg.len() > 0 %}
+  <div class="mb-4 p-3 bg-error-container text-on-error-container rounded-lg text-xs font-semibold flex items-center gap-2">
+    <span class="material-symbols-outlined text-base">error</span>
+    <span>{{ error_msg }}</span>
+  </div>
+  {% endif %}
+
+  <form method="POST" action="/login" class="space-y-4">
+    <div>
+      <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Alamat Email</label>
+      <input type="email" name="email" required placeholder="nama@email.com"
+             class="w-full h-11 px-3.5 bg-surface-container-low text-on-surface rounded-lg border border-transparent focus:border-secondary focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary/20 transition text-sm">
+    </div>
+
+    <div>
+      <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Kata Sandi</label>
+      <input type="password" name="password" required placeholder="Minimal 8 karakter"
+             class="w-full h-11 px-3.5 bg-surface-container-low text-on-surface rounded-lg border border-transparent focus:border-secondary focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary/20 transition text-sm">
+    </div>
+
+    <button type="submit"
+            class="w-full h-11 bg-secondary hover:bg-on-secondary-container text-white rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2 text-sm mt-2">
+      <span class="material-symbols-outlined text-lg">login</span>
+      Masuk ke Akun
+    </button>
+  </form>
+
+  <div class="mt-6 pt-4 border-t border-[#E2E8F0] text-center">
+    <p class="text-xs text-on-surface-variant">Belum memiliki akun warga? 
+      <a href="/register" class="font-bold text-secondary hover:underline">Daftar sekarang</a>
+    </p>
+  </div>
+
+  <!-- Akun Coba Cepat (UTS Demo Helper) -->
+  <div class="mt-6 p-3.5 bg-surface-container-low rounded-xl text-[11px] text-on-surface-variant">
+    <div class="font-bold text-primary mb-1 flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm text-secondary">info</span> Akun Uji Coba Prototipe UTS:
+    </div>
+    <ul class="space-y-0.5 list-disc list-inside">
+      <li>Admin: <code class="font-mono text-primary font-bold">admin@bandarlampung.go.id</code> (rahasia123)</li>
+      <li>Petugas PU: <code class="font-mono text-primary font-bold">petugas.pu@bandarlampung.go.id</code> (rahasia123)</li>
+      <li>Warga: <code class="font-mono text-primary font-bold">warga@gmail.com</code> (rahasia123)</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

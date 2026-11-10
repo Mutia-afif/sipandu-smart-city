@@ -1,0 +1,111 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: "class",
+  content: [
+    "./templates/**/*.html",
+    "./src/**/*.rs"
+  ],
+  theme: {
+    extend: {
+      colors: {
+        "surface-bright": "#f8f9ff",
+        "primary": "#002046",
+        "tertiary": "#311c00",
+        "secondary-fixed-dim": "#59dbc7",
+        "tertiary-fixed-dim": "#ffb95f",
+        "surface-container-high": "#dce9ff",
+        "surface-dim": "#cbdbf5",
+        "inverse-on-surface": "#eaf1ff",
+        "inverse-primary": "#aec7f7",
+        "secondary": "#006b5f",
+        "on-tertiary": "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary-fixed-variant": "#005047",
+        "on-primary-fixed-variant": "#2e476f",
+        "tertiary-container": "#4e2f00",
+        "on-tertiary-fixed-variant": "#653e00",
+        "inverse-surface": "#213145",
+        "on-tertiary-container": "#dd8d00",
+        "surface-container-highest": "#d3e4fe",
+        "primary-fixed-dim": "#aec7f7",
+        "surface-container": "#e5eeff",
+        "outline-variant": "#c4c6cf",
+        "on-secondary-fixed": "#00201c",
+        "error": "#ba1a1a",
+        "surface-container-low": "#eff4ff",
+        "secondary-fixed": "#79f7e3",
+        "on-tertiary-fixed": "#2a1700",
+        "surface-tint": "#465f88",
+        "on-primary-container": "#87a0cd",
+        "on-secondary-container": "#006f63",
+        "surface-variant": "#d3e4fe",
+        "on-secondary": "#ffffff",
+        "error-container": "#ffdad6",
+        "background": "#f8f9ff",
+        "tertiary-fixed": "#ffddb8",
+        "outline": "#74777f",
+        "primary-fixed": "#d6e3ff",
+        "secondary-container": "#76f4e0",
+        "on-surface": "#0b1c30",
+        "surface": "#f8f9ff",
+        "on-background": "#0b1c30",
+        "on-primary-fixed": "#001b3d",
+        "on-error": "#ffffff",
+        "on-primary": "#ffffff",
+        "on-surface-variant": "#44474e",
+        "on-error-container": "#93000a",
+        "primary-container": "#1b365d"
+      },
+      borderRadius: {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      spacing: {
+        "space-xs": "0.25rem",
+        "space-sm": "0.5rem",
+        "space-md": "1rem",
+        "space-lg": "1.5rem",
+        "space-xl": "2rem",
+        "margin": "2rem",
+        "margin-mobile": "1rem",
+        "gutter": "1.5rem",
+        "gutter-mobile": "1rem"
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        "headline-sm": ["Inter", "sans-serif"],
+        "label-sm": ["Inter", "sans-serif"],
+        "body-sm": ["Inter", "sans-serif"],
+        "label-lg": ["Inter", "sans-serif"],
+        "headline-md": ["Inter", "sans-serif"],
+        "title-md": ["Inter", "sans-serif"],
+        "headline-lg": ["Inter", "sans-serif"],
+        "body-md": ["Inter", "sans-serif"],
+        "display-lg": ["Inter", "sans-serif"],
+        "display-lg-mobile": ["Inter", "sans-serif"],
+        "body-lg": ["Inter", "sans-serif"],
+        "headline-lg-mobile": ["Inter", "sans-serif"],
+        "label-md": ["Inter", "sans-serif"]
+      },
+      fontSize: {
+        "headline-sm": ["1.25rem", { lineHeight: "1.75rem", fontWeight: "600" }],
+        "label-sm": ["0.6875rem", { lineHeight: "0.875rem", letterSpacing: "0.05em", fontWeight: "700" }],
+        "body-sm": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }],
+        "label-lg": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600" }],
+        "headline-md": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600" }],
+        "title-md": ["1.125rem", { lineHeight: "1.5rem", fontWeight: "600" }],
+        "headline-lg": ["2rem", { lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "body-md": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }],
+        "display-lg": ["3rem", { lineHeight: "3.5rem", letterSpacing: "-0.025em", fontWeight: "800" }],
+        "display-lg-mobile": ["2.25rem", { lineHeight: "2.75rem", letterSpacing: "-0.02em", fontWeight: "800" }],
+        "body-lg": ["1.125rem", { lineHeight: "1.75rem", fontWeight: "400" }],
+        "headline-lg-mobile": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "700" }],
+        "label-md": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.025em", fontWeight: "600" }]
+      }
+    }
+  },
+  plugins: []
+};
+

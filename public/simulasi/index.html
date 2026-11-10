@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulasi Alur Terpadu 3 Peran - SIPANDU Smart City (Demo UTS)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f8f9ff",
+            "primary": "#002046",
+            "primary-container": "#1b365d",
+            "secondary": "#006b5f",
+            "secondary-container": "#76f4e0",
+            "surface": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#44474e",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#dd8d00",
+            "tertiary-fixed": "#ffddb8"
+          },
+          spacing: {
+            "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xl": "2rem",
+            "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "gutter-mobile": "1rem"
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans">
+  
+  <header class="bg-surface-container-lowest/95 backdrop-blur-xl border-b border-[#E2E8F0] sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="/" class="flex items-center gap-2.5">
+          <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung"
+               class="h-11 sm:h-12 w-auto object-contain hover:scale-105 transition-transform">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary">SIPANDU</span>
+            <span class="text-[10px] text-on-surface-variant -mt-0.5 font-medium">Kota Bandar Lampung</span>
+          </div>
+        </a>
+
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-[#E2E8F0]">
+          <a href="https://teknokrat.ac.id" target="_blank" rel="noopener" class="flex items-center gap-2">
+            <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia"
+                 class="h-10 w-auto object-contain hover:scale-105 transition-transform">
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold text-secondary uppercase tracking-tight">Universitas Teknokrat Indonesia</span>
+              <span class="text-[9px] text-on-surface-variant -mt-0.5">Kampus Juara &bull; Riset PPSI</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-2 sm:gap-3">
+        <a href="/warga" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Portal Warga</a>
+        <a href="/petugas" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Petugas</a>
+        <a href="/admin" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Command Center</a>
+        <a href="/simulasi" class="text-xs sm:text-sm font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">account_tree</span>
+          Simulasi UTS
+        </a>
+        <a href="/login" class="text-xs sm:text-sm font-bold bg-primary text-white px-3.5 py-2 rounded-lg hover:bg-primary-container transition flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-base">login</span>
+          Masuk
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+<div class="space-y-6">
+  <!-- Header Simulasi & Kendali Skenario -->
+  <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center">
+        <span class="material-symbols-outlined text-2xl">account_tree</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Demo Presentasi Interaktif UTS</span>
+          <span class="text-slate-300">&bull;</span>
+          <span class="text-[10px] font-bold text-primary uppercase">Mutia Afif Ramadhani (24311124)</span>
+        </div>
+        <h1 class="text-xl font-extrabold text-primary">Simulasi Alur Terpadu 3 Peran Sistem</h1>
+      </div>
+    </div>
+
+    <!-- Tombol Kendali Skenario Demonstrasi -->
+    <div class="flex items-center gap-2.5">
+      <button onclick="runScenarioA()" id="btn-scenario-a"
+              class="px-4 py-2 bg-secondary hover:bg-on-secondary-container text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+        <span class="material-symbols-outlined text-sm">play_circle</span>
+        Skenario A: Alur Ideal (Tuntas Disposisi)
+      </button>
+      <button onclick="runScenarioB()" id="btn-scenario-b"
+              class="px-4 py-2 bg-surface-container-low hover:bg-error-container text-error text-xs font-bold rounded-xl border border-[#E2E8F0] shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+        <span class="material-symbols-outlined text-sm">cancel</span>
+        Skenario B: Ditolak (Bukan Kewenangan)
+      </button>
+      <button onclick="resetSimulation()" class="px-3 py-2 bg-surface-container text-on-surface-variant text-xs font-bold rounded-xl hover:bg-surface-container-high transition">
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- 3 Panel Berdampingan (Warga, Admin Command Center, Petugas Lapangan) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- PANEL 1: SISI WARGA -->
+    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">1</span>
+          <h2 class="text-xs font-bold text-primary uppercase tracking-wider">Tampilan Warga Pelapor</h2>
+        </div>
+        <span id="warga-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Standby</span>
+      </div>
+
+      <div class="p-3.5 bg-surface-bright rounded-xl border border-[#E2E8F0] space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] font-bold text-primary bg-primary-fixed px-1.5 py-0.5 rounded" id="sim-ticket-id">#BDL-2026-DEMO</span>
+          <span class="text-[10px] text-on-surface-variant" id="sim-ticket-time">Baru Saja</span>
+        </div>
+        <h3 class="font-bold text-primary text-xs" id="sim-ticket-title">Lubang Jalan Dalam di Depan Teknokrat</h3>
+        <p class="text-[11px] text-on-surface-variant" id="sim-ticket-desc">Terdapat lubang sedalam 15 cm yang sangat membahayakan pengendara motor saat hujan.</p>
+        
+        <!-- Stepper Visual Warga -->
+        <div class="pt-2">
+          <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Linimasa Aduan:</span>
+          <div class="grid grid-cols-4 gap-1 text-[9px] text-center font-bold">
+            <div id="step-1" class="p-1 rounded bg-slate-200 text-slate-600">Diterima</div>
+            <div id="step-2" class="p-1 rounded bg-slate-200 text-slate-600">Verifikasi</div>
+            <div id="step-3" class="p-1 rounded bg-slate-200 text-slate-600">Penanganan</div>
+            <div id="step-4" class="p-1 rounded bg-slate-200 text-slate-600">Selesai</div>
+          </div>
+        </div>
+
+        <!-- Callout Penolakan jika Skenario B -->
+        <div id="warga-rejection-box" class="hidden p-2.5 bg-error-container text-on-error-container rounded-lg text-[10px] space-y-0.5">
+          <strong>Alasan Penolakan:</strong>
+          <p id="warga-rejection-text">Lokasi kerusakan berada di jalan lintas nasional (Kementerian PUPR), bukan kewenangan Pemkot Bandar Lampung.</p>
+        </div>
+
+        <!-- Foto Bukti Hasil jika Skenario A Selesai -->
+        <div id="warga-proof-box" class="hidden p-2.5 bg-secondary-container/30 border border-secondary/20 rounded-lg text-[10px] space-y-1">
+          <strong class="text-secondary flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">check_circle</span>
+            Pekerjaan Telah Dituntaskan
+          </strong>
+          <p class="italic text-on-surface-variant">"Penambalan aspal hotmix 2 titik telah selesai dikerjakan oleh Tim Reaksi Cepat Dinas PU."</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: SISI COMMAND CENTER ADMIN -->
+    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs">2</span>
+          <h2 class="text-xs font-bold text-primary uppercase tracking-wider">Command Center Admin</h2>
+        </div>
+        <span id="admin-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Standby</span>
+      </div>
+
+      <div class="p-3.5 bg-surface-bright rounded-xl border border-[#E2E8F0] space-y-2.5 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold uppercase text-on-surface-variant">Antrean Verifikasi Masuk</span>
+          <span class="text-[10px] font-mono font-bold text-on-tertiary-container">PostGIS Radius: 50m Clear</span>
+        </div>
+
+        <div class="space-y-1.5 p-2 bg-white rounded-lg border border-[#E2E8F0]">
+          <div class="flex justify-between text-[10px]">
+            <span class="text-on-surface-variant">Dinas Tujuan:</span>
+            <strong id="admin-dinas-val" class="text-primary">-</strong>
+          </div>
+          <div class="flex justify-between text-[10px]">
+            <span class="text-on-surface-variant">Tingkat Prioritas:</span>
+            <strong id="admin-prioritas-val" class="text-primary">-</strong>
+          </div>
+          <div class="flex justify-between text-[10px]">
+            <span class="text-on-surface-variant">Aksi Verifikasi:</span>
+            <strong id="admin-action-val" class="text-primary">Menunggu Aksi</strong>
+          </div>
+        </div>
+
+        <div class="p-2 bg-surface-container-low rounded-lg text-[10px] text-on-surface-variant">
+          <div class="font-bold text-primary mb-0.5">Audit Log Atomik (FR-08):</div>
+          <p id="admin-audit-log" class="font-mono text-[9px] text-slate-600">System Ready. Menunggu skenario...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 3: SISI PETUGAS LAPANGAN -->
+    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-primary-container text-white flex items-center justify-center font-bold text-xs">3</span>
+          <h2 class="text-xs font-bold text-primary uppercase tracking-wider">Petugas Lapangan Dinas</h2>
+        </div>
+        <span id="petugas-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Standby</span>
+      </div>
+
+      <div class="p-3.5 bg-surface-bright rounded-xl border border-[#E2E8F0] space-y-2.5 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold uppercase text-on-surface-variant">Workbench Unit PU</span>
+          <span id="petugas-distance" class="text-[10px] font-bold text-secondary font-mono">Jarak: -</span>
+        </div>
+
+        <div class="space-y-1.5 p-2 bg-white rounded-lg border border-[#E2E8F0]">
+          <div class="flex justify-between text-[10px]">
+            <span class="text-on-surface-variant">Status Pengerjaan:</span>
+            <strong id="petugas-status-val" class="text-primary">Menunggu Disposisi</strong>
+          </div>
+          <div class="flex justify-between text-[10px]">
+            <span class="text-on-surface-variant">Bukti Penanganan:</span>
+            <strong id="petugas-proof-val" class="text-slate-400">Belum Ada</strong>
+          </div>
+        </div>
+
+        <div id="petugas-action-box" class="p-2 bg-surface-container-low rounded-lg text-[10px] text-on-surface-variant">
+          <div class="font-bold text-primary mb-0.5">Status Eksekusi Lapangan:</div>
+          <p id="petugas-log" class="font-mono text-[9px] text-slate-600">Menunggu tugas dari Command Center...</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Live Simulation Event Logger -->
+  <div class="bg-surface-container-lowest p-5 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-2">
+    <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+      <h3 class="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-secondary text-sm">terminal</span>
+        Live Simulation Event Stream (Audit Log Real-Time)
+      </h3>
+      <span class="text-[10px] text-secondary font-bold">Sinkronisasi Database PostGIS</span>
+    </div>
+    <div id="sim-event-stream" class="p-3 bg-slate-900 text-slate-200 rounded-xl font-mono text-[11px] h-32 overflow-y-auto space-y-1">
+      <div class="text-slate-400">[INFO] Sistem siap. Klik salah satu tombol skenario di atas untuk memulai simulasi.</div>
+    </div>
+  </div>
+</div>
+
+  </main>
+  
+  <footer class="w-full bg-surface-container-lowest border-t border-[#E2E8F0] py-space-md mt-auto shadow-[0_-1px_6px_rgba(0,0,0,0.02)]">
+    <div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin grid grid-cols-2 md:grid-cols-[auto_1fr_auto] items-center gap-space-md">
+      <!-- Kiri: Pemda Kota Bandar Lampung -->
+      <div class="order-1 flex items-center gap-space-sm justify-self-start">
+        <img alt="Logo Pemda Kota Bandar Lampung" src="/static/img/logo_pemda.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+        <div class="flex flex-col text-left">
+          <span class="font-label-sm text-[11px] text-on-surface font-bold uppercase tracking-tight">Pemerintah Kota</span>
+          <span class="font-label-md text-xs text-primary font-bold tracking-tight">Bandar Lampung</span>
+        </div>
+      </div>
+
+      <!-- Tengah: Teks Hak Cipta Persis PRD FR-09 -->
+      <p class="order-3 md:order-2 col-span-2 md:col-span-1 text-center font-body-sm text-xs sm:text-sm font-medium text-slate-600">
+        Copyright©2026 by Mutia Afif Ramadhani dan Dr. Erliyan Redy Susanto, M.Kom
+      </p>
+
+      <!-- Kanan: Universitas Teknokrat Indonesia (UTI) -->
+      <div class="order-2 md:order-3 flex items-center gap-space-sm justify-self-end">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="font-label-sm text-[11px] text-secondary font-bold uppercase tracking-wide">Kampus Juara - UTI</span>
+          <span class="font-label-sm text-[10px] text-on-surface-variant">Universitas Teknokrat Indonesia</span>
+        </div>
+        <img alt="Logo Universitas Teknokrat Indonesia" src="/static/img/logo_uti.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

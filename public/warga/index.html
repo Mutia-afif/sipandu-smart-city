@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Warga - SIPANDU Smart City</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f8f9ff",
+            "primary": "#002046",
+            "primary-container": "#1b365d",
+            "secondary": "#006b5f",
+            "secondary-container": "#76f4e0",
+            "surface": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#44474e",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#dd8d00",
+            "tertiary-fixed": "#ffddb8"
+          },
+          spacing: {
+            "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xl": "2rem",
+            "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "gutter-mobile": "1rem"
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans">
+  
+  <header class="bg-surface-container-lowest/95 backdrop-blur-xl border-b border-[#E2E8F0] sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="/" class="flex items-center gap-2.5">
+          <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung"
+               class="h-11 sm:h-12 w-auto object-contain hover:scale-105 transition-transform">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary">SIPANDU</span>
+            <span class="text-[10px] text-on-surface-variant -mt-0.5 font-medium">Kota Bandar Lampung</span>
+          </div>
+        </a>
+
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-[#E2E8F0]">
+          <a href="https://teknokrat.ac.id" target="_blank" rel="noopener" class="flex items-center gap-2">
+            <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia"
+                 class="h-10 w-auto object-contain hover:scale-105 transition-transform">
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold text-secondary uppercase tracking-tight">Universitas Teknokrat Indonesia</span>
+              <span class="text-[9px] text-on-surface-variant -mt-0.5">Kampus Juara &bull; Riset PPSI</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-2 sm:gap-3">
+        <a href="/warga" class="text-xs sm:text-sm font-semibold text-secondary px-2.5 py-1.5 rounded-lg transition">Portal Warga</a>
+        <a href="/petugas" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Petugas</a>
+        <a href="/admin" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Command Center</a>
+        <a href="/simulasi" class="text-xs sm:text-sm font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">account_tree</span>
+          Simulasi UTS
+        </a>
+        <a href="/login" class="text-xs sm:text-sm font-bold bg-primary text-white px-3.5 py-2 rounded-lg hover:bg-primary-container transition flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-base">login</span>
+          Masuk
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+<div class="space-y-6">
+  <!-- Header Portal Warga -->
+  <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-secondary text-white flex items-center justify-center">
+        <span class="material-symbols-outlined text-2xl">campaign</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Portal Warga Pelapor</span>
+          <span class="text-slate-300">&bull;</span>
+          <span class="text-[10px] font-semibold text-on-surface-variant">Kota Bandar Lampung</span>
+        </div>
+        <h1 class="text-xl font-extrabold text-primary">Layanan Pengaduan Kerusakan Infrastruktur</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-medium text-slate-600">Pelapor: <strong class="text-primary">Mutia Afif (Warga)</strong></span>
+      <a href="/login" class="text-xs font-bold text-error px-2 py-1 rounded hover:bg-error-container/30 transition">Keluar</a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Formulir Kirim Aduan Baru -->
+    <div class="lg:col-span-6 bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-4">
+      <h2 class="text-sm font-extrabold text-primary uppercase tracking-wider flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
+        <span class="material-symbols-outlined text-secondary">add_location_alt</span>
+        Kirim Aduan Infrastruktur Baru
+      </h2>
+
+      <!-- Peringatan Duplikasi PostGIS 50m (Live Reactive) -->
+      <div id="duplicate-warning-banner" class="hidden p-3.5 rounded-xl bg-tertiary-fixed text-on-tertiary-container border border-on-tertiary-container/30 text-xs flex items-start gap-2.5">
+        <span class="material-symbols-outlined text-lg shrink-0">warning</span>
+        <div>
+          <strong class="block font-bold">Peringatan Spasial PostGIS ST_DWithin (Radius 50m):</strong>
+          <span id="duplicate-msg">Terdeteksi aduan aktif serupa di lokasi ini. Anda tetap dapat melanjutkan pengiriman.</span>
+        </div>
+      </div>
+
+      <form id="warga-form" onsubmit="handleWargaSubmit(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-on-surface-variant mb-1.5">Pilih Kategori Infrastruktur (3 Kategori MVP):</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-[#E2E8F0] cursor-pointer hover:border-secondary transition bg-surface-container-low">
+              <input type="radio" name="kategori" value="Jalan Berlubang" checked class="text-secondary focus:ring-secondary">
+              <span class="font-bold text-[11px] text-primary">Jalan Berlubang</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-[#E2E8F0] cursor-pointer hover:border-secondary transition bg-surface-container-low">
+              <input type="radio" name="kategori" value="PJU Padam" class="text-secondary focus:ring-secondary">
+              <span class="font-bold text-[11px] text-primary">PJU Padam</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-[#E2E8F0] cursor-pointer hover:border-secondary transition bg-surface-container-low">
+              <input type="radio" name="kategori" value="Drainase Tersumbat" class="text-secondary focus:ring-secondary">
+              <span class="font-bold text-[11px] text-primary">Drainase</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-on-surface-variant mb-1">Judul Singkat Kerusakan:</label>
+          <input type="text" id="warga-judul" required placeholder="Contoh: Lubang Aspal Dalam Membahayakan Motor"
+                 class="w-full px-3 py-2 rounded-lg border border-[#E2E8F0] bg-surface-container-low focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary text-xs">
+        </div>
+
+        <div>
+          <label class="block font-bold text-on-surface-variant mb-1">Deskripsi & Patokan Lokasi:</label>
+          <textarea id="warga-deskripsi" rows="3" required placeholder="Jelaskan kondisi kerusakan dan patokan ruko/bangunan terdekat..."
+                    class="w-full px-3 py-2 rounded-lg border border-[#E2E8F0] bg-surface-container-low focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary text-xs"></textarea>
+        </div>
+
+        <!-- Pemetaan GPS Leaflet + PostGIS Picker -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-bold text-on-surface-variant">Tandai Titik Lokasi di Peta (GPS Leaflet):</label>
+            <button type="button" onclick="detectLocation()" class="text-[11px] font-bold text-secondary hover:underline flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">my_location</span> Titik Teknokrat
+            </button>
+          </div>
+          <div id="warga-map" class="h-48 w-full rounded-xl border border-[#E2E8F0] z-10"></div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <input type="text" id="warga-lat" readonly value="-5.3812" class="px-2.5 py-1.5 bg-surface-container text-slate-600 rounded text-[11px] font-mono">
+            <input type="text" id="warga-lng" readonly value="105.2571" class="px-2.5 py-1.5 bg-surface-container text-slate-600 rounded text-[11px] font-mono">
+          </div>
+        </div>
+
+        <!-- Unggah Foto Bukti Awal -->
+        <div>
+          <label class="block font-bold text-on-surface-variant mb-1">Lampirkan Foto Bukti (Maks. 3 foto &bull; Sanitasi EXIF Aktif):</label>
+          <input type="file" id="warga-foto" accept="image/*" class="w-full text-[11px] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-secondary hover:bg-on-secondary-container text-white font-bold rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+          <span class="material-symbols-outlined text-sm">send</span>
+          Kirim Laporan Pengaduan
+        </button>
+      </form>
+    </div>
+
+    <!-- Riwayat Aduan Saya & Linimasa 4 Status -->
+    <div class="lg:col-span-6 space-y-4">
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-4">
+        <h2 class="text-sm font-extrabold text-primary uppercase tracking-wider flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
+          <span class="material-symbols-outlined text-secondary">history</span>
+          Riwayat Pengaduan Saya (Linimasa Status)
+        </h2>
+
+        <div id="aduan-list-container" class="space-y-4">
+          <!-- Item Aduan 1 (Default Seed) -->
+          <div class="p-4 rounded-xl border border-[#E2E8F0] bg-surface-bright space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded">#BDL-2026-7782</span>
+              <span class="text-[10px] text-on-surface-variant">10 Nov 2026, 14:15 WIB</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-primary text-xs">Jalan Berlubang di Depan Gerbang Teknokrat</h3>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed-variant">Selesai Ditangani</span>
+            </div>
+            <p class="text-[11px] text-on-surface-variant">Lubang aspal sedalam 15cm sangat membahayakan pengendara roda dua saat tergenang hujan.</p>
+            
+            <!-- 4-Step Stepper -->
+            <div class="grid grid-cols-4 gap-1 text-[9px] text-center font-bold pt-1">
+              <div class="p-1 rounded bg-secondary text-white">Diterima</div>
+              <div class="p-1 rounded bg-secondary text-white">Diverifikasi</div>
+              <div class="p-1 rounded bg-secondary text-white">Penanganan</div>
+              <div class="p-1 rounded bg-secondary text-white">Selesai</div>
+            </div>
+
+            <!-- Catatan Selesai & Foto Bukti -->
+            <div class="p-2.5 rounded-lg bg-secondary/5 border border-secondary/20 text-[10px] space-y-1">
+              <strong class="text-secondary flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">check_circle</span>
+                Telah Diselesaikan oleh Dinas Pekerjaan Umum:
+              </strong>
+              <p class="italic text-slate-600">"Penambalan aspal hotmix 2 titik telah tuntas dikerjakan oleh Tim Reaksi Cepat PU."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let map, marker;
+  window.addEventListener('DOMContentLoaded', () => {
+    // Inisialisasi Peta Leaflet di Bandar Lampung
+    map = L.map('warga-map').setView([-5.3812, 105.2571], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    marker = L.marker([-5.3812, 105.2571], { draggable: true }).addTo(map);
+    marker.on('dragend', function (e) {
+      const pos = marker.getLatLng();
+      updateCoordinates(pos.lat, pos.lng);
+    });
+
+    map.on('click', function(e) {
+      marker.setLatLng(e.latlng);
+      updateCoordinates(e.latlng.lat, e.latlng.lng);
+    });
+  });
+
+  function updateCoordinates(lat, lng) {
+    document.getElementById('warga-lat').value = lat.toFixed(6);
+    document.getElementById('warga-lng').value = lng.toFixed(6);
+
+    // Cek Duplikasi Spasial 50 Meter terhadap titik Teknokrat (-5.3812, 105.2571)
+    const dist = calculateDistance(lat, lng, -5.3812, 105.2571);
+    const warn = document.getElementById('duplicate-warning-banner');
+    if (dist <= 50) {
+      warn.classList.remove('hidden');
+      document.getElementById('duplicate-msg').innerText = `Terdeteksi aduan aktif berjarak ${Math.round(dist)} meter dari titik ini (Radius 50m PostGIS). Warga tetap dapat melanjutkan pengiriman.`;
+    } else {
+      warn.classList.add('hidden');
+    }
+  }
+
+  function detectLocation() {
+    map.setView([-5.3812, 105.2571], 16);
+    marker.setLatLng([-5.3812, 105.2571]);
+    updateCoordinates(-5.3812, 105.2571);
+  }
+
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const phi1 = lat1 * Math.PI / 180;
+    const phi2 = lat2 * Math.PI / 180;
+    const dphi = (lat2 - lat1) * Math.PI / 180;
+    const dlam = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dphi/2) * Math.sin(dphi/2) + Math.cos(phi1) * Math.cos(phi2) * Math.sin(dlam/2) * Math.sin(dlam/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  function handleWargaSubmit(e) {
+    e.preventDefault();
+    const judul = document.getElementById('warga-judul').value;
+    const desc = document.getElementById('warga-deskripsi').value;
+    const randNum = Math.floor(1000 + Math.random() * 9000);
+    const ticketId = `#BDL-2026-${randNum}`;
+
+    const newCard = document.createElement('div');
+    newCard.className = "p-4 rounded-xl border border-secondary/40 bg-secondary/5 space-y-3 animate-fade-in";
+    newCard.innerHTML = `
+      <div class="flex items-center justify-between">
+        <span class="font-mono text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded">${ticketId}</span>
+        <span class="text-[10px] text-secondary font-bold">Baru Dikirim</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-primary text-xs">${judul}</h3>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Diterima (Pending)</span>
+      </div>
+      <p class="text-[11px] text-on-surface-variant">${desc}</p>
+      <div class="grid grid-cols-4 gap-1 text-[9px] text-center font-bold pt-1">
+        <div class="p-1 rounded bg-secondary text-white">Diterima</div>
+        <div class="p-1 rounded bg-slate-200 text-slate-500">Diverifikasi</div>
+        <div class="p-1 rounded bg-slate-200 text-slate-500">Penanganan</div>
+        <div class="p-1 rounded bg-slate-200 text-slate-500">Selesai</div>
+      </div>
+    `;
+
+    const container = document.getElementById('aduan-list-container');
+    container.insertBefore(newCard, container.firstChild);
+    document.getElementById('warga-form').reset();
+    alert(`Aduan berhasil dikirim dengan Nomor Tiket ${ticketId}! Tiket masuk antrean verifikasi Admin Pemda.`);
+  }
+</script>
+
+  </main>
+  
+  <footer class="w-full bg-surface-container-lowest border-t border-[#E2E8F0] py-space-md mt-auto shadow-[0_-1px_6px_rgba(0,0,0,0.02)]">
+    <div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin grid grid-cols-2 md:grid-cols-[auto_1fr_auto] items-center gap-space-md">
+      <!-- Kiri: Pemda Kota Bandar Lampung -->
+      <div class="order-1 flex items-center gap-space-sm justify-self-start">
+        <img alt="Logo Pemda Kota Bandar Lampung" src="/static/img/logo_pemda.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+        <div class="flex flex-col text-left">
+          <span class="font-label-sm text-[11px] text-on-surface font-bold uppercase tracking-tight">Pemerintah Kota</span>
+          <span class="font-label-md text-xs text-primary font-bold tracking-tight">Bandar Lampung</span>
+        </div>
+      </div>
+
+      <!-- Tengah: Teks Hak Cipta Persis PRD FR-09 -->
+      <p class="order-3 md:order-2 col-span-2 md:col-span-1 text-center font-body-sm text-xs sm:text-sm font-medium text-slate-600">
+        Copyright©2026 by Mutia Afif Ramadhani dan Dr. Erliyan Redy Susanto, M.Kom
+      </p>
+
+      <!-- Kanan: Universitas Teknokrat Indonesia (UTI) -->
+      <div class="order-2 md:order-3 flex items-center gap-space-sm justify-self-end">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="font-label-sm text-[11px] text-secondary font-bold uppercase tracking-wide">Kampus Juara - UTI</span>
+          <span class="font-label-sm text-[10px] text-on-surface-variant">Universitas Teknokrat Indonesia</span>
+        </div>
+        <img alt="Logo Universitas Teknokrat Indonesia" src="/static/img/logo_uti.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

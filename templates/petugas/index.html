@@ -1,0 +1,251 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Petugas Lapangan - SIPANDU Kota Bandar Lampung{% endblock %}
+
+{% block nav_items %}
+<span class="text-xs font-bold text-secondary px-2.5 py-1 bg-secondary-container/30 rounded-lg">Petugas: {{ petugas_nama }} ({{ dinas_nama }})</span>
+<a href="/logout" class="text-xs font-semibold text-error hover:underline px-2">Keluar</a>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Banner Identitas Petugas & GPS -->
+  <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung" class="h-12 w-auto object-contain">
+      <div class="h-10 w-px bg-[#E2E8F0] hidden sm:block"></div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Pemerintah Kota Bandar Lampung</span>
+        </div>
+        <h1 class="text-lg font-extrabold text-primary">{{ petugas_nama }}</h1>
+        <p class="text-xs text-on-surface-variant">Unit Lapangan Dinas: <span class="font-bold text-secondary">{{ dinas_nama }}</span></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="updatePetugasGPS()" class="px-3.5 py-2 bg-surface-container-low hover:bg-surface-container text-primary text-xs font-bold rounded-lg border border-[#E2E8F0] flex items-center gap-1.5 transition">
+        <span class="material-symbols-outlined text-sm text-secondary">near_me</span>
+        <span id="gps-status">Aktifkan GPS (Urutkan Berdasarkan Jarak)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 4 Counter Tugas (KPI Mini) -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Total Tugas Dinas</span>
+      <span class="text-2xl font-bold text-primary mt-1 block">{{ count_total }}</span>
+    </div>
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[10px] font-bold text-on-tertiary-container uppercase tracking-wider block">Menunggu Dikerjakan</span>
+      <span class="text-2xl font-bold text-on-tertiary-container mt-1 block">{{ count_pending }}</span>
+    </div>
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[10px] font-bold text-primary-container uppercase tracking-wider block">Sedang Ditangani</span>
+      <span class="text-2xl font-bold text-primary-container mt-1 block">{{ count_in_progress }}</span>
+    </div>
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[10px] font-bold text-secondary uppercase tracking-wider block">Telah Selesai</span>
+      <span class="text-2xl font-bold text-secondary mt-1 block">{{ count_resolved }}</span>
+    </div>
+  </div>
+
+  <!-- Area Kerja (Grid 12 Kolom: Kiri Daftar Tiket 7 Kolom, Kanan Workbench 5 Kolom) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Kolom Kiri: Daftar Tugas Tiket (7 Kolom) -->
+    <div class="lg:col-span-7 space-y-4">
+      <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+        <h2 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-secondary">format_list_bulleted</span>
+          Antrean Tugas Lapangan
+        </h2>
+        <span class="text-xs text-on-surface-variant">Diurutkan: Prioritas & Jarak</span>
+      </div>
+
+      <div class="space-y-3">
+        {% for task in task_list %}
+        <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] hover:border-secondary transition shadow-xs cursor-pointer task-card"
+             data-id="{{ task.id }}"
+             data-no="{{ task.no_aduan }}"
+             data-judul="{{ task.judul }}"
+             data-deskripsi="{{ task.deskripsi }}"
+             data-status="{{ task.status }}"
+             data-version="{{ task.version }}"
+             onclick="selectTaskFromEl(this)">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="font-mono text-xs font-bold text-primary px-2 py-0.5 bg-primary-fixed rounded">#{{ task.no_aduan }}</span>
+            <div class="flex items-center gap-1.5">
+              {% if task.prioritas == "tinggi" %}
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-error-container text-on-error-container">Tinggi</span>
+              {% else if task.prioritas == "sedang" %}
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed">Sedang</span>
+              {% else %}
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">Rendah</span>
+              {% endif %}
+
+              <span class="text-[10px] font-semibold px-2 py-0.5 bg-surface-container-low rounded text-on-surface-variant">
+                {{ task.status }}
+              </span>
+            </div>
+          </div>
+
+          <h3 class="text-sm font-bold text-primary truncate">{{ task.judul }}</h3>
+          <p class="text-xs text-on-surface-variant line-clamp-2 mt-1">{{ task.deskripsi }}</p>
+
+          <div class="flex items-center justify-between text-[11px] text-on-surface-variant mt-3 pt-2 border-t border-[#E2E8F0]">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">location_on</span>
+              {{ task.alamat_teks }}
+            </span>
+            <span class="font-bold text-secondary font-mono">{{ task.jarak_meter }} m</span>
+          </div>
+        </div>
+        {% endfor %}
+
+        {% if task_list.len() == 0 %}
+        <div class="p-8 text-center bg-surface-container-lowest rounded-xl border border-[#E2E8F0] text-xs text-on-surface-variant">
+          Semua tugas lapangan untuk dinas Anda telah tuntas diselesaikan.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Kolom Kanan: Workbench Penanganan (5 Kolom) -->
+    <div class="lg:col-span-5 bg-surface-container-lowest p-5 rounded-xl border border-[#E2E8F0] shadow-sm space-y-5 sticky top-24">
+      <div class="border-b border-[#E2E8F0] pb-2">
+        <h2 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-secondary">build</span>
+          Workbench Penanganan Tiket
+        </h2>
+        <p class="text-[11px] text-on-surface-variant" id="selected-ticket-label">Pilih salah satu tiket di sebelah kiri</p>
+      </div>
+
+      <div id="workbench-empty" class="py-12 text-center text-xs text-on-surface-variant">
+        <span class="material-symbols-outlined text-4xl text-slate-300 block mb-1">touch_app</span>
+        Klik tiket tugas untuk memproses status & bukti penanganan
+      </div>
+
+      <div id="workbench-active" class="hidden space-y-4">
+        <div>
+          <span id="active-no-aduan" class="font-mono text-xs font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded"></span>
+          <h3 id="active-judul" class="text-sm font-bold text-primary mt-1.5"></h3>
+          <p id="active-deskripsi" class="text-xs text-on-surface-variant mt-1"></p>
+        </div>
+
+        <!-- 1. Tombol Ambil Tugas (In Progress) -->
+        <form method="POST" action="/petugas/take" id="form-take">
+          <input type="hidden" name="aduan_id" id="take-aduan-id">
+          <input type="hidden" name="version" id="take-version">
+          <button type="submit" id="btn-take"
+                  class="w-full h-10 bg-primary-container hover:bg-primary text-white rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition">
+            <span class="material-symbols-outlined text-base">directions_run</span>
+            Mulai Tangani (Ubah Ke "Dalam Penanganan")
+          </button>
+        </form>
+
+        <!-- 2. Form Selesaikan Aduan (Wajib Bukti Foto & Catatan) -->
+        <form method="POST" action="/petugas/resolve" enctype="multipart/form-data" id="form-resolve" class="space-y-3 pt-3 border-t border-[#E2E8F0]">
+          <input type="hidden" name="aduan_id" id="resolve-aduan-id">
+          <input type="hidden" name="version" id="resolve-version">
+
+          <div>
+            <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">
+              Foto Bukti Penanganan (Wajib)
+            </label>
+            <input type="file" name="foto_bukti" id="foto-bukti-input" required accept="image/jpeg,image/png,image/webp"
+                   onchange="checkProofPhoto(this)"
+                   class="w-full text-xs text-on-surface file:mr-2 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-surface-container file:text-primary hover:file:bg-surface-container-high cursor-pointer">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">
+              Catatan Teknis Pengerjaan
+            </label>
+            <textarea name="catatan_teknis" rows="3" required placeholder="Jelaskan penanganan yang dilakukan (misal: penambalan aspal hotmix 2 titik telah selesai)..."
+                      class="w-full p-2.5 bg-surface-container-low rounded-lg text-xs text-on-surface border border-transparent focus:border-secondary focus:bg-white focus:outline-none transition"></textarea>
+          </div>
+
+          <button type="submit" id="btn-resolve" disabled
+                  class="w-full h-11 bg-slate-300 text-slate-500 cursor-not-allowed rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm">
+            <span class="material-symbols-outlined text-base">task_alt</span>
+            Kirim Bukti & Selesaikan Aduan
+          </button>
+          <p id="proof-warning" class="text-[10px] text-error font-medium text-center">
+            *Tombol penutupan tiket terkunci hingga foto bukti penanganan dipilih.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function selectTaskFromEl(el) {
+    const id = el.getAttribute('data-id');
+    const no = el.getAttribute('data-no');
+    const judul = el.getAttribute('data-judul');
+    const deskripsi = el.getAttribute('data-deskripsi');
+    const status = el.getAttribute('data-status');
+    const version = el.getAttribute('data-version');
+    selectTask(id, no, judul, deskripsi, status, version);
+  }
+
+  function selectTask(id, no, judul, deskripsi, status, version) {
+    document.getElementById('workbench-empty').classList.add('hidden');
+    document.getElementById('workbench-active').classList.remove('hidden');
+
+    document.getElementById('active-no-aduan').textContent = '#' + no;
+    document.getElementById('active-judul').textContent = judul;
+    document.getElementById('active-deskripsi').textContent = deskripsi;
+    document.getElementById('selected-ticket-label').textContent = 'Memproses Tiket #' + no;
+
+    document.getElementById('take-aduan-id').value = id;
+    document.getElementById('take-version').value = version;
+
+    document.getElementById('resolve-aduan-id').value = id;
+    document.getElementById('resolve-version').value = version;
+
+    if (status === 'in_progress') {
+      document.getElementById('btn-take').disabled = true;
+      document.getElementById('btn-take').classList.add('opacity-50', 'cursor-not-allowed');
+      document.getElementById('btn-take').innerHTML = '<span class="material-symbols-outlined text-base">check</span> Sedang Dikerjakan';
+    } else {
+      document.getElementById('btn-take').disabled = false;
+      document.getElementById('btn-take').classList.remove('opacity-50', 'cursor-not-allowed');
+      document.getElementById('btn-take').innerHTML = '<span class="material-symbols-outlined text-base">directions_run</span> Mulai Tangani (Ubah Ke "Dalam Penanganan")';
+    }
+  }
+
+  function checkProofPhoto(input) {
+    const btn = document.getElementById('btn-resolve');
+    const warning = document.getElementById('proof-warning');
+    if (input.files && input.files.length > 0) {
+      btn.disabled = false;
+      btn.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+      btn.classList.add('bg-secondary', 'hover:bg-on-secondary-container', 'text-white');
+      warning.classList.add('hidden');
+    } else {
+      btn.disabled = true;
+      btn.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+      btn.classList.remove('bg-secondary', 'hover:bg-on-secondary-container', 'text-white');
+      warning.classList.remove('hidden');
+    }
+  }
+
+  function updatePetugasGPS() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        document.getElementById('gps-status').textContent = `GPS Aktif (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+        window.location.href = `/petugas?lat=${lat}&lng=${lng}`;
+      }, function() {
+        alert('Tidak dapat mendeteksi lokasi GPS perangkat.');
+      });
+    }
+  }
+</script>
+{% endblock %}
+

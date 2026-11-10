@@ -1,0 +1,19 @@
+# Dependencies & Build Artefacts
+/target/
+node_modules/
+dist/
+
+# Vercel & Environment
+.vercel
+.env*
+!.env.example
+
+# Python Caches
+__pycache__/
+*.pyc
+
+# Archives & Temporary Files
+*.zip
+*.log
+.DS_Store
+Thumbs.db

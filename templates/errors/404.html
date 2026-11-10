@@ -1,0 +1,23 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Halaman Tidak Ditemukan (404) - SIPANDU Smart City{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto my-16 text-center bg-surface-container-lowest p-8 rounded-xl border border-[#E2E8F0] shadow-sm">
+  <div class="inline-flex p-4 bg-surface-container-low text-primary rounded-2xl mb-4">
+    <span class="material-symbols-outlined text-5xl">explore_off</span>
+  </div>
+  <h1 class="text-3xl font-extrabold text-primary">404</h1>
+  <h2 class="text-lg font-bold text-on-surface mt-2">Halaman Tidak Ditemukan</h2>
+  <p class="text-xs text-on-surface-variant mt-2 max-w-sm mx-auto">
+    Alamat tautan yang Anda cari tidak tersedia atau telah dipindahkan dalam sistem SIPANDU Kota Bandar Lampung.
+  </p>
+  <div class="mt-6 flex justify-center gap-3">
+    <a href="/warga" class="px-4 py-2 bg-secondary hover:bg-on-secondary-container text-white text-xs font-bold rounded-lg transition shadow-sm flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm">home</span>
+      Kembali ke Beranda
+    </a>
+  </div>
+</div>
+{% endblock %}
+

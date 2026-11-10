@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/warga", "destination": "/warga/index.html" },
+    { "source": "/petugas", "destination": "/petugas/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/simulasi", "destination": "/simulasi/index.html" },
+    { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/register", "destination": "/register/index.html" }
+  ]
+}

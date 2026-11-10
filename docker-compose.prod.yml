@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: sipandu_prod_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rahasiaPostgres2026}
+      POSTGRES_DB: sipandu_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_prod_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sipandu_prod_app
+    environment:
+      DATABASE_URL: postgres://postgres:${DB_PASSWORD:-rahasiaPostgres2026}@db:5432/sipandu_db
+      HOST: 0.0.0.0
+      PORT: 3000
+      UPLOAD_DIR: static/uploads
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - app_uploads:/app/static/uploads
+    restart: always
+
+volumes:
+  postgis_prod_data:
+  app_uploads:
+

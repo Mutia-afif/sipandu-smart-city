@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPANDU Smart City - Kota Bandar Lampung (UTS PPSI 2026)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f8f9ff",
+            "primary": "#002046",
+            "primary-container": "#1b365d",
+            "secondary": "#006b5f",
+            "secondary-container": "#76f4e0",
+            "surface": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#44474e",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#dd8d00",
+            "tertiary-fixed": "#ffddb8"
+          },
+          spacing: {
+            "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xl": "2rem",
+            "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "gutter-mobile": "1rem"
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans">
+  
+  <header class="bg-surface-container-lowest/95 backdrop-blur-xl border-b border-[#E2E8F0] sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="/" class="flex items-center gap-2.5">
+          <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung"
+               class="h-11 sm:h-12 w-auto object-contain hover:scale-105 transition-transform">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary">SIPANDU</span>
+            <span class="text-[10px] text-on-surface-variant -mt-0.5 font-medium">Kota Bandar Lampung</span>
+          </div>
+        </a>
+
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-[#E2E8F0]">
+          <a href="https://teknokrat.ac.id" target="_blank" rel="noopener" class="flex items-center gap-2">
+            <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia"
+                 class="h-10 w-auto object-contain hover:scale-105 transition-transform">
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold text-secondary uppercase tracking-tight">Universitas Teknokrat Indonesia</span>
+              <span class="text-[9px] text-on-surface-variant -mt-0.5">Kampus Juara &bull; Riset PPSI</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-2 sm:gap-3">
+        <a href="/warga" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Portal Warga</a>
+        <a href="/petugas" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Petugas</a>
+        <a href="/admin" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Command Center</a>
+        <a href="/simulasi" class="text-xs sm:text-sm font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">account_tree</span>
+          Simulasi UTS
+        </a>
+        <a href="/login" class="text-xs sm:text-sm font-bold bg-primary text-white px-3.5 py-2 rounded-lg hover:bg-primary-container transition flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-base">login</span>
+          Masuk
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+<div class="space-y-8">
+  <!-- Banner Utama UTS -->
+  <div class="bg-gradient-to-r from-primary via-primary-container to-secondary text-white p-8 sm:p-10 rounded-3xl shadow-lg relative overflow-hidden">
+    <div class="relative z-10 max-w-3xl space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+        UTS Proyek Pengembangan Sistem Informasi (PPSI) &bull; Tahun Akademik 2026
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+        SIPANDU Smart City<br>
+        <span class="text-secondary-container">Kota Bandar Lampung</span>
+      </h1>
+      <p class="text-sm sm:text-base text-slate-200 leading-relaxed">
+        Sistem Pengaduan dan Penanganan Infrastruktur Kota Terpadu berbasis Spasial PostGIS.
+        Dikembangkan sebagai implementasi UTS mandiri atas nama <strong>Mutia Afif Ramadhani (NPM 24311124)</strong>, 
+        di bawah bimbingan <strong>Dr. Erliyan Redy Susanto, M.Kom</strong>.
+      </p>
+      <div class="pt-2 flex flex-wrap items-center gap-3">
+        <a href="/simulasi" class="px-5 py-2.5 bg-secondary-container text-primary font-bold rounded-xl text-xs sm:text-sm hover:scale-105 transition-transform flex items-center gap-2 shadow-md">
+          <span class="material-symbols-outlined text-lg">play_circle</span>
+          Buka Simulasi Interaktif 3 Peran
+        </a>
+        <a href="/warga" class="px-5 py-2.5 bg-white/15 hover:bg-white/25 text-white font-semibold rounded-xl text-xs sm:text-sm backdrop-blur-md transition flex items-center gap-2 border border-white/20">
+          <span class="material-symbols-outlined text-lg">campaign</span>
+          Portal Warga Pelapor
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 Kartu Modul Utama Sistem -->
+  <div>
+    <h2 class="text-lg font-extrabold text-primary mb-4 flex items-center gap-2">
+      <span class="material-symbols-outlined text-secondary">grid_view</span>
+      Pilih Antarmuka Layanan Peran Pengguna
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Modul 1: Warga -->
+      <a href="/warga" class="group bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm hover:border-secondary hover:shadow-md transition space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition">
+          <span class="material-symbols-outlined text-2xl">person_pin_circle</span>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-primary text-base group-hover:text-secondary transition">Portal Warga</h3>
+          <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Kirim laporan dengan GPS Leaflet, deteksi duplikasi spasial 50m, dan pantau linimasa 4 status aduan.
+          </p>
+        </div>
+        <span class="text-xs font-bold text-secondary inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          Akses Portal Warga &rarr;
+        </span>
+      </a>
+
+      <!-- Modul 2: Petugas -->
+      <a href="/petugas" class="group bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm hover:border-primary hover:shadow-md transition space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition">
+          <span class="material-symbols-outlined text-2xl">engineering</span>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-primary text-base group-hover:text-primary transition">Petugas Lapangan</h3>
+          <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Daftar tugas terurut prioritas dan jarak lokasi, ambil penugasan, serta unggah foto bukti selesai.
+          </p>
+        </div>
+        <span class="text-xs font-bold text-primary inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          Akses Portal Petugas &rarr;
+        </span>
+      </a>
+
+      <!-- Modul 3: Admin -->
+      <a href="/admin" class="group bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm hover:border-primary-container hover:shadow-md transition space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-primary-container/10 text-primary-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-white transition">
+          <span class="material-symbols-outlined text-2xl">shield_person</span>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-primary text-base group-hover:text-primary-container transition">Command Center Admin</h3>
+          <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Monitoring 4 KPI kota, verifikasi dan disposisi tiket ke dinas teknis, peta GIS titik kerusakan, dan audit trail.
+          </p>
+        </div>
+        <span class="text-xs font-bold text-primary-container inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          Akses Command Center &rarr;
+        </span>
+      </a>
+
+      <!-- Modul 4: Simulasi Demo -->
+      <a href="/simulasi" class="group bg-surface-container-lowest p-6 rounded-2xl border-2 border-secondary/30 shadow-sm hover:border-secondary hover:shadow-md transition space-y-4 bg-gradient-to-b from-secondary/5 to-transparent">
+        <div class="w-12 h-12 rounded-xl bg-secondary text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-2xl">account_tree</span>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-secondary text-base">Simulasi Interaktif 3 Peran</h3>
+          <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Halaman presentasi demo berdampingan (Warga, Admin, Petugas PU) untuk memverifikasi Skenario A & B di depan dosen.
+          </p>
+        </div>
+        <span class="text-xs font-bold text-secondary inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          Buka Demo Simulasi &rarr;
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Detail Spesifikasi & Kepatuhan Guardrails UTS -->
+  <div class="bg-surface-container-low p-6 rounded-2xl border border-[#E2E8F0] space-y-4">
+    <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+      <h3 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-secondary">verified</span>
+        Kepatuhan Standar Guardrails UTS (PRD Section 1 s/d 13)
+      </h3>
+      <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-secondary/10 text-secondary">Status: 100% Terpenuhi</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+      <div class="p-3 bg-white rounded-xl border border-[#E2E8F0]">
+        <strong class="text-primary block mb-1">1. Privasi Warga (Bebas NIK)</strong>
+        <p class="text-on-surface-variant">Sesuai UU PDP & PRD FR-01, sistem sama sekali tidak meminta, memproses, atau menyimpan NIK pada registrasi warga.</p>
+      </div>
+      <div class="p-3 bg-white rounded-xl border border-[#E2E8F0]">
+        <strong class="text-primary block mb-1">2. Spasial PostGIS 50 Meter</strong>
+        <p class="text-on-surface-variant">Deteksi duplikasi aduan murni menggunakan fungsi spasial ST_DWithin radius 50m dan pengurutan petugas via ST_Distance.</p>
+      </div>
+      <div class="p-3 bg-white rounded-xl border border-[#E2E8F0]">
+        <strong class="text-primary block mb-1">3. Optimistic Concurrency Control</strong>
+        <p class="text-on-surface-variant">Setiap transaksi status aduan menguji kolom version INT untuk mencegah penimpaan data simultan (race condition).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </main>
+  
+  <footer class="w-full bg-surface-container-lowest border-t border-[#E2E8F0] py-space-md mt-auto shadow-[0_-1px_6px_rgba(0,0,0,0.02)]">
+    <div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin grid grid-cols-2 md:grid-cols-[auto_1fr_auto] items-center gap-space-md">
+      <!-- Kiri: Pemda Kota Bandar Lampung -->
+      <div class="order-1 flex items-center gap-space-sm justify-self-start">
+        <img alt="Logo Pemda Kota Bandar Lampung" src="/static/img/logo_pemda.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+        <div class="flex flex-col text-left">
+          <span class="font-label-sm text-[11px] text-on-surface font-bold uppercase tracking-tight">Pemerintah Kota</span>
+          <span class="font-label-md text-xs text-primary font-bold tracking-tight">Bandar Lampung</span>
+        </div>
+      </div>
+
+      <!-- Tengah: Teks Hak Cipta Persis PRD FR-09 -->
+      <p class="order-3 md:order-2 col-span-2 md:col-span-1 text-center font-body-sm text-xs sm:text-sm font-medium text-slate-600">
+        Copyright©2026 by Mutia Afif Ramadhani dan Dr. Erliyan Redy Susanto, M.Kom
+      </p>
+
+      <!-- Kanan: Universitas Teknokrat Indonesia (UTI) -->
+      <div class="order-2 md:order-3 flex items-center gap-space-sm justify-self-end">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="font-label-sm text-[11px] text-secondary font-bold uppercase tracking-wide">Kampus Juara - UTI</span>
+          <span class="font-label-sm text-[10px] text-on-surface-variant">Universitas Teknokrat Indonesia</span>
+        </div>
+        <img alt="Logo Universitas Teknokrat Indonesia" src="/static/img/logo_uti.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

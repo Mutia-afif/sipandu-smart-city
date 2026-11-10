@@ -1,0 +1,421 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Portal Warga - SIPANDU Kota Bandar Lampung{% endblock %}
+
+{% block nav_items %}
+<span class="text-xs font-bold text-primary px-2.5 py-1 bg-surface-container rounded-lg">Warga: {{ current_user_nama }}</span>
+<a href="/logout" class="text-xs font-semibold text-error hover:underline px-2">Keluar</a>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+  <!-- Banner Sambutan -->
+  <div class="bg-gradient-to-r from-primary to-primary-container text-white p-6 sm:p-8 rounded-2xl shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+    <div class="flex items-start gap-4 z-10">
+      <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung" class="h-16 w-auto object-contain bg-white/10 p-1.5 rounded-xl backdrop-blur-sm hidden sm:block">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-secondary-container">Layanan Pengaduan Publik</span>
+          <span class="text-white/40">&bull;</span>
+          <span class="text-xs text-white/80 font-medium">Pemkot Bandar Lampung &bull; UTI</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold mt-1">Sampaikan Laporan Kerusakan Fasilitas Kota</h1>
+        <p class="text-xs sm:text-sm text-surface-container-high mt-1.5 max-w-xl leading-relaxed">
+          Laporkan jalan berlubang, lampu penerangan jalan padam, atau saluran drainase tersumbat di Kota Bandar Lampung untuk penanganan cepat dan terpadu.
+        </p>
+      </div>
+    </div>
+    <a href="#form-aduan" class="z-10 px-5 py-3 bg-secondary hover:bg-on-secondary-container text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition flex items-center gap-2 whitespace-nowrap">
+      <span class="material-symbols-outlined text-lg">add_circle</span>
+      Buat Aduan Baru
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Kolom Kiri: Form Buat Aduan (7 Kolom) -->
+    <div id="form-aduan" class="lg:col-span-7 bg-surface-container-lowest p-6 rounded-xl border border-[#E2E8F0] shadow-sm space-y-6">
+      <div class="border-b border-[#E2E8F0] pb-3">
+        <h2 class="text-lg font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">campaign</span>
+          Formulir Pengaduan Warga
+        </h2>
+        <p class="text-xs text-on-surface-variant">Pastikan lokasi akurat dan sertakan foto bukti kerusakan.</p>
+      </div>
+
+      <!-- Container Banner Duplikasi (Diisi oleh HTMX) -->
+      <div id="duplicate-warning-container"></div>
+
+      <form method="POST" action="/warga/aduan" enctype="multipart/form-data" class="space-y-5">
+        <!-- 1. Kategori Aduan (3 Kategori MVP) -->
+        <div>
+          <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">1. Pilih Kategori Masalah</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label class="cursor-pointer border border-[#E2E8F0] rounded-xl p-3 flex flex-col items-center text-center hover:bg-surface-container-low transition has-[:checked]:border-secondary has-[:checked]:bg-surface-container-low has-[:checked]:ring-2 has-[:checked]:ring-secondary">
+              <input type="radio" name="category_id" value="44444444-4444-4444-4444-444444444444" required checked class="hidden"
+                     hx-get="/api/aduan/check-duplicate" hx-trigger="change" hx-target="#duplicate-warning-container" hx-include="#lat, #lng">
+              <span class="material-symbols-outlined text-primary text-2xl mb-1">add_road</span>
+              <span class="text-xs font-bold text-on-surface">Jalan Berlubang</span>
+              <span class="text-[10px] text-on-surface-variant mt-0.5">Dinas PU</span>
+            </label>
+
+            <label class="cursor-pointer border border-[#E2E8F0] rounded-xl p-3 flex flex-col items-center text-center hover:bg-surface-container-low transition has-[:checked]:border-secondary has-[:checked]:bg-surface-container-low has-[:checked]:ring-2 has-[:checked]:ring-secondary">
+              <input type="radio" name="category_id" value="55555555-5555-5555-5555-555555555555" required class="hidden"
+                     hx-get="/api/aduan/check-duplicate" hx-trigger="change" hx-target="#duplicate-warning-container" hx-include="#lat, #lng">
+              <span class="material-symbols-outlined text-primary text-2xl mb-1">light</span>
+              <span class="text-xs font-bold text-on-surface">PJU Padam</span>
+              <span class="text-[10px] text-on-surface-variant mt-0.5">Dinas Perhubungan</span>
+            </label>
+
+            <label class="cursor-pointer border border-[#E2E8F0] rounded-xl p-3 flex flex-col items-center text-center hover:bg-surface-container-low transition has-[:checked]:border-secondary has-[:checked]:bg-surface-container-low has-[:checked]:ring-2 has-[:checked]:ring-secondary">
+              <input type="radio" name="category_id" value="66666666-6666-6666-6666-666666666666" required class="hidden"
+                     hx-get="/api/aduan/check-duplicate" hx-trigger="change" hx-target="#duplicate-warning-container" hx-include="#lat, #lng">
+              <span class="material-symbols-outlined text-primary text-2xl mb-1">water_damage</span>
+              <span class="text-xs font-bold text-on-surface">Drainase Tersumbat</span>
+              <span class="text-[10px] text-on-surface-variant mt-0.5">Dinas PU</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Lokasi dan Peta GPS -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-bold text-on-surface uppercase tracking-wider">2. Titik Lokasi Masalah</label>
+            <button type="button" onclick="detectGPS()" class="text-xs font-bold text-secondary flex items-center gap-1 hover:underline">
+              <span class="material-symbols-outlined text-sm">my_location</span>
+              Deteksi Posisi Saya (GPS)
+            </button>
+          </div>
+          <div id="map-picker" class="w-full h-64 rounded-xl border border-[#E2E8F0] overflow-hidden shadow-inner z-10"></div>
+          <div class="grid grid-cols-2 gap-3 mt-2">
+            <div>
+              <span class="text-[10px] font-bold text-on-surface-variant">Latitude</span>
+              <input type="text" id="lat" name="latitude" value="-5.4292" readonly required
+                     class="w-full h-9 px-3 bg-surface-container-low rounded-lg text-xs font-mono font-semibold text-primary">
+            </div>
+            <div>
+              <span class="text-[10px] font-bold text-on-surface-variant">Longitude</span>
+              <input type="text" id="lng" name="longitude" value="105.2611" readonly required
+                     class="w-full h-9 px-3 bg-surface-container-low rounded-lg text-xs font-mono font-semibold text-primary">
+            </div>
+          </div>
+          <p class="text-[10px] text-on-surface-variant mt-1">*Geser pin di peta untuk menyempurnakan lokasi titik kerusakan.</p>
+        </div>
+
+        <!-- 3. Judul & Alamat Teks -->
+        <div>
+          <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">3. Judul Singkat & Patokan Alamat</label>
+          <input type="text" name="judul" required placeholder="Contoh: Lubang dalam di Jalan ZA Pagar Alam dekat Teknokrat"
+                 class="w-full h-11 px-3.5 bg-surface-container-low text-on-surface rounded-lg border border-transparent focus:border-secondary focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary/20 transition text-xs sm:text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Alamat Lengkap / Patokan Jalan (Opsional)</label>
+          <input type="text" name="alamat_teks" placeholder="Contoh: Depan ruko percetakan, 50m sebelum lampu merah"
+                 class="w-full h-11 px-3.5 bg-surface-container-low text-on-surface rounded-lg border border-transparent focus:border-secondary focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary/20 transition text-xs sm:text-sm">
+        </div>
+
+        <!-- 4. Deskripsi Masalah (Maks 500 Karakter) -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-on-surface uppercase tracking-wider">4. Deskripsi Detail Masalah</label>
+            <span id="char-counter" class="text-[10px] font-bold text-on-surface-variant">0 / 500</span>
+          </div>
+          <textarea name="deskripsi" id="deskripsi-input" rows="3" maxlength="500" required placeholder="Jelaskan kondisi kerusakan, potensi bahaya, dan perkiraan besarnya..."
+                    oninput="document.getElementById('char-counter').innerText = this.value.length + ' / 500'"
+                    class="w-full p-3 bg-surface-container-low text-on-surface rounded-lg border border-transparent focus:border-secondary focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary/20 transition text-xs sm:text-sm resize-none"></textarea>
+        </div>
+
+        <!-- 5. Upload Foto (Maks 3, Strip EXIF) -->
+        <div>
+          <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">5. Lampirkan Foto Bukti (Maks. 3 Foto)</label>
+          <div class="border-2 border-dashed border-[#c4c6cf] hover:border-secondary rounded-xl p-5 text-center bg-surface-container-low/50 transition cursor-pointer">
+            <input type="file" name="foto" id="foto-input" accept="image/jpeg,image/png,image/webp" multiple
+                   class="hidden" onchange="updatePhotoPreview(this)">
+            <label for="foto-input" class="cursor-pointer flex flex-col items-center">
+              <span class="material-symbols-outlined text-primary text-3xl mb-1">add_a_photo</span>
+              <span class="text-xs font-bold text-primary">Pilih atau Seret Foto Kerusakan</span>
+              <span class="text-[10px] text-on-surface-variant mt-0.5">Format JPG, PNG, WebP (Maks. 5 MB per foto)</span>
+            </label>
+            <div id="photo-preview-list" class="mt-3 flex flex-wrap gap-2 justify-center"></div>
+          </div>
+          <div class="mt-2 flex items-center gap-1.5 text-[11px] text-secondary font-semibold">
+            <span class="material-symbols-outlined text-sm">enhanced_encryption</span>
+            <span>EXIF Metadata Lokasi Auto-Stripped demi privasi Anda</span>
+          </div>
+        </div>
+
+        <button type="submit"
+                class="w-full h-11 bg-secondary hover:bg-on-secondary-container text-white rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2 text-sm">
+          <span class="material-symbols-outlined text-lg">send</span>
+          Kirim Pengaduan Sekarang
+        </button>
+      </form>
+    </div>
+
+    <!-- Kolom Kanan: Panduan & Informasi Layanan (5 Kolom) -->
+    <div class="lg:col-span-5 space-y-6">
+      <div class="bg-surface-container-lowest p-6 rounded-xl border border-[#E2E8F0] shadow-sm">
+        <h3 class="text-sm font-bold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-secondary">info</span>
+          Alur Penanganan Laporan
+        </h3>
+        <ol class="space-y-3 text-xs text-on-surface-variant">
+          <li class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-primary text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <strong class="text-on-surface font-semibold">Pengiriman Laporan:</strong>
+              <p>Laporan Anda masuk antrean dengan status Diterima (Pending).</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-primary text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <strong class="text-on-surface font-semibold">Verifikasi Admin Pemda:</strong>
+              <p>Admin menyaring laporan valid, menetapkan prioritas, dan meneruskan ke dinas penanggung jawab.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-primary text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <strong class="text-on-surface font-semibold">Penanganan Petugas:</strong>
+              <p>Petugas dinas menangani di lokasi dan wajib mengunggah foto hasil pekerjaan.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Quick Contact Box -->
+      <div class="bg-surface-container-low p-5 rounded-xl border border-[#E2E8F0] text-xs">
+        <h4 class="font-bold text-primary flex items-center gap-1.5 mb-1">
+          <span class="material-symbols-outlined text-base">support_agent</span>
+          Layanan Darurat Kota Bandar Lampung
+        </h4>
+        <p class="text-on-surface-variant text-[11px] mb-2">Untuk insiden darurat yang mengancam nyawa segera hubungi:</p>
+        <div class="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-[#E2E8F0]">
+          <span class="font-bold text-primary">Call Center Kedaruratan</span>
+          <span class="font-bold text-error text-sm">112 (Bebas Pulsa)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN DAFTAR STATUS ADUAN SAYA -->
+  <div class="bg-surface-container-lowest p-6 rounded-xl border border-[#E2E8F0] shadow-sm space-y-6">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#E2E8F0] pb-4">
+      <div>
+        <h2 class="text-lg font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">history</span>
+          Status Aduan Saya
+        </h2>
+        <p class="text-xs text-on-surface-variant">Pantau linimasa dan bukti penanganan setiap tiket laporan Anda.</p>
+      </div>
+      <div class="inline-flex p-1 bg-surface-container-low rounded-lg text-xs font-semibold">
+        <button class="px-3 py-1 bg-white text-primary rounded-md shadow-xs font-bold">Semua Laporan</button>
+      </div>
+    </div>
+
+    <!-- List Kartu Aduan -->
+    <div class="space-y-6">
+      {% for item in aduan_list %}
+      <div id="aduan-{{ item.id }}" class="border border-[#E2E8F0] rounded-xl p-5 hover:border-secondary transition space-y-4 bg-surface-bright">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold font-mono px-2 py-0.5 bg-primary-fixed text-primary rounded">#{{ item.no_aduan }}</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 bg-surface-container text-on-surface-variant rounded-full">{{ item.nama_kategori }}</span>
+            <span class="text-xs text-on-surface-variant">{{ item.created_at }}</span>
+          </div>
+
+          <!-- Status Badge -->
+          <div>
+            {% if item.status == "pending" %}
+            <span class="text-xs font-bold px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">hourglass_empty</span> Diterima (Pending)
+            </span>
+            {% else if item.status == "verified" %}
+            <span class="text-xs font-bold px-3 py-1 bg-surface-container-high text-primary rounded-full flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">verified</span> Diverifikasi
+            </span>
+            {% else if item.status == "in_progress" %}
+            <span class="text-xs font-bold px-3 py-1 bg-primary-container text-white rounded-full flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">engineering</span> Dalam Penanganan
+            </span>
+            {% else if item.status == "resolved" %}
+            <span class="text-xs font-bold px-3 py-1 bg-secondary text-white rounded-full flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">check_circle</span> Selesai
+            </span>
+            {% else if item.status == "rejected" %}
+            <span class="text-xs font-bold px-3 py-1 bg-error-container text-on-error-container rounded-full flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">cancel</span> Ditolak
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-base font-bold text-primary">{{ item.judul }}</h3>
+          <p class="text-xs text-on-surface mt-1">{{ item.deskripsi }}</p>
+          {% if item.alamat_teks.len() > 0 %}
+          <p class="text-[11px] text-on-surface-variant mt-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">pin_drop</span> Patokan: {{ item.alamat_teks }}
+          </p>
+          {% endif %}
+        </div>
+
+        <!-- Stepper 4 Tahap Visual -->
+        {% if item.status != "rejected" %}
+        <div class="py-2">
+          <div class="grid grid-cols-4 gap-2 text-center text-[11px]">
+            <div class="p-2 rounded-lg {% if item.status == 'pending' || item.status == 'verified' || item.status == 'in_progress' || item.status == 'resolved' %}bg-primary text-white font-bold{% else %}bg-surface-container text-on-surface-variant{% endif %}">
+              1. Diterima
+            </div>
+            <div class="p-2 rounded-lg {% if item.status == 'verified' || item.status == 'in_progress' || item.status == 'resolved' %}bg-primary text-white font-bold{% else %}bg-surface-container text-on-surface-variant{% endif %}">
+              2. Diverifikasi
+            </div>
+            <div class="p-2 rounded-lg {% if item.status == 'in_progress' || item.status == 'resolved' %}bg-primary text-white font-bold{% else %}bg-surface-container text-on-surface-variant{% endif %}">
+              3. Penanganan
+            </div>
+            <div class="p-2 rounded-lg {% if item.status == 'resolved' %}bg-secondary text-white font-bold{% else %}bg-surface-container text-on-surface-variant{% endif %}">
+              4. Selesai
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Callout Penolakan jika Status Rejected -->
+        {% if item.status == "rejected" %}
+        <div class="p-3.5 bg-error-container text-on-error-container rounded-lg text-xs space-y-1">
+          <div class="font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-base">info</span>
+            Alasan Penolakan dari Admin Pemda:
+          </div>
+          <p class="pl-5">{{ item.alasan_penolakan }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Foto Sebelum & Sesudah jika Selesai -->
+        {% if item.status == "resolved" %}
+        <div class="border-t border-[#E2E8F0] pt-3">
+          <h4 class="text-xs font-bold text-primary mb-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm text-secondary">photo_library</span>
+            Hasil Penanganan Petugas Lapangan
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-white p-2.5 rounded-lg border border-[#E2E8F0]">
+              <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Foto Bukti Warga (Sebelum)</span>
+              <div class="h-36 bg-surface-container-low rounded flex items-center justify-center text-xs text-on-surface-variant">
+                {% if item.foto_laporan.len() > 0 %}
+                <img src="{{ item.foto_laporan }}" alt="Sebelum" class="h-full w-full object-cover rounded">
+                {% else %}
+                <span>Foto laporan awal</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="bg-white p-2.5 rounded-lg border border-[#E2E8F0]">
+              <span class="text-[10px] font-bold text-secondary uppercase tracking-wider block mb-1">Foto Hasil Perbaikan (Sesudah)</span>
+              <div class="h-36 bg-surface-container-low rounded flex items-center justify-center text-xs text-on-surface-variant">
+                {% if item.foto_penanganan.len() > 0 %}
+                <img src="{{ item.foto_penanganan }}" alt="Sesudah" class="h-full w-full object-cover rounded">
+                {% else %}
+                <span class="text-secondary font-semibold">Telah ditangani petugas</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% if item.catatan_penanganan.len() > 0 %}
+          <p class="text-xs text-on-surface-variant mt-2 italic bg-surface-container-low p-2 rounded">
+            Catatan Petugas: "{{ item.catatan_penanganan }}"
+          </p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      {% if aduan_list.len() == 0 %}
+      <div class="text-center py-12 text-on-surface-variant text-xs">
+        <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">inbox</span>
+        <p>Anda belum mengirimkan laporan aduan.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let map, marker;
+  function initPickerMap() {
+    const defaultLat = -5.4292; // Bandar Lampung
+    const defaultLng = 105.2611;
+
+    map = L.map('map-picker').setView([defaultLat, defaultLng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+    marker.on('dragend', function (e) {
+      const coord = marker.getLatLng();
+      updateCoordinates(coord.lat, coord.lng);
+    });
+
+    map.on('click', function(e) {
+      marker.setLatLng(e.latlng);
+      updateCoordinates(e.latlng.lat, e.latlng.lng);
+    });
+  }
+
+  function updateCoordinates(lat, lng) {
+    document.getElementById('lat').value = lat.toFixed(6);
+    document.getElementById('lng').value = lng.toFixed(6);
+    
+    // Trigger HTMX duplicate check
+    const catRadio = document.querySelector('input[name="category_id"]:checked');
+    if (catRadio) {
+      htmx.ajax('GET', `/api/aduan/check-duplicate?category_id=${catRadio.value}&latitude=${lat}&longitude=${lng}`, {
+        target: '#duplicate-warning-container',
+        swap: 'innerHTML'
+      });
+    }
+  }
+
+  function detectGPS() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          map.setView([lat, lng], 16);
+          marker.setLatLng([lat, lng]);
+          updateCoordinates(lat, lng);
+        },
+        function (err) {
+          alert('Gagal mendeteksi lokasi GPS. Silakan tentukan titik langsung di peta.');
+        }
+      );
+    }
+  }
+
+  function updatePhotoPreview(input) {
+    const list = document.getElementById('photo-preview-list');
+    list.innerHTML = '';
+    if (input.files.length > 3) {
+      alert('Maksimal 3 foto yang diperbolehkan.');
+      input.value = '';
+      return;
+    }
+    for (let i = 0; i < input.files.length; i++) {
+      const f = input.files[i];
+      const badge = document.createElement('span');
+      badge.className = 'text-[10px] bg-surface-container font-mono px-2 py-1 rounded text-primary border border-[#E2E8F0]';
+      badge.textContent = `${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`;
+      list.appendChild(badge);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initPickerMap);
+</script>
+{% endblock %}
+

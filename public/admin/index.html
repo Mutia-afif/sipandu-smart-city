@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Center Admin - SIPANDU Smart City</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f8f9ff",
+            "primary": "#002046",
+            "primary-container": "#1b365d",
+            "secondary": "#006b5f",
+            "secondary-container": "#76f4e0",
+            "surface": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#44474e",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#dd8d00",
+            "tertiary-fixed": "#ffddb8"
+          },
+          spacing: {
+            "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xl": "2rem",
+            "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "gutter-mobile": "1rem"
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans">
+  
+  <header class="bg-surface-container-lowest/95 backdrop-blur-xl border-b border-[#E2E8F0] sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="/" class="flex items-center gap-2.5">
+          <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung"
+               class="h-11 sm:h-12 w-auto object-contain hover:scale-105 transition-transform">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary">SIPANDU</span>
+            <span class="text-[10px] text-on-surface-variant -mt-0.5 font-medium">Kota Bandar Lampung</span>
+          </div>
+        </a>
+
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-[#E2E8F0]">
+          <a href="https://teknokrat.ac.id" target="_blank" rel="noopener" class="flex items-center gap-2">
+            <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia"
+                 class="h-10 w-auto object-contain hover:scale-105 transition-transform">
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold text-secondary uppercase tracking-tight">Universitas Teknokrat Indonesia</span>
+              <span class="text-[9px] text-on-surface-variant -mt-0.5">Kampus Juara &bull; Riset PPSI</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-2 sm:gap-3">
+        <a href="/warga" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Portal Warga</a>
+        <a href="/petugas" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Petugas</a>
+        <a href="/admin" class="text-xs sm:text-sm font-semibold text-secondary px-2.5 py-1.5 rounded-lg transition">Command Center</a>
+        <a href="/simulasi" class="text-xs sm:text-sm font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">account_tree</span>
+          Simulasi UTS
+        </a>
+        <a href="/login" class="text-xs sm:text-sm font-bold bg-primary text-white px-3.5 py-2 rounded-lg hover:bg-primary-container transition flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-base">login</span>
+          Masuk
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+<div class="space-y-6">
+  <!-- Header Admin -->
+  <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-primary-container text-white flex items-center justify-center">
+        <span class="material-symbols-outlined text-2xl">shield_person</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Command Center Pemkot</span>
+          <span class="text-slate-300">&bull;</span>
+          <span class="text-[10px] font-bold text-primary uppercase">Pemerintah Kota Bandar Lampung</span>
+        </div>
+        <h1 class="text-xl font-extrabold text-primary">Dashboard Pengawasan & Disposisi Aduan</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-slate-600">Administrator: <strong class="text-primary">Admin Pemda BDL</strong></span>
+      <a href="/login" class="text-xs font-bold text-error px-2 py-1 rounded hover:bg-error-container/30 transition">Keluar</a>
+    </div>
+  </div>
+
+  <!-- 4 KPI Cards -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="p-4 bg-surface-container-lowest rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[11px] font-bold text-on-surface-variant block">Total Aduan Masuk</span>
+      <span class="text-2xl font-extrabold text-primary">42</span>
+    </div>
+    <div class="p-4 bg-surface-container-lowest rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[11px] font-bold text-on-surface-variant block">Antrean Verifikasi (Pending)</span>
+      <span class="text-2xl font-extrabold text-on-tertiary-container" id="admin-pending-count">3</span>
+    </div>
+    <div class="p-4 bg-surface-container-lowest rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[11px] font-bold text-on-surface-variant block">Sedang Dikerjakan</span>
+      <span class="text-2xl font-extrabold text-primary-container">7</span>
+    </div>
+    <div class="p-4 bg-surface-container-lowest rounded-xl border border-[#E2E8F0] shadow-xs">
+      <span class="text-[11px] font-bold text-on-surface-variant block">Tuntas Selesai</span>
+      <span class="text-2xl font-extrabold text-secondary">32</span>
+    </div>
+  </div>
+
+  <!-- Peta Sebaran GIS Kota Bandar Lampung -->
+  <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-3">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-extrabold text-primary uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary">map</span>
+        Peta Sebaran Spasial Kerusakan Infrastruktur (PostGIS Point 4326)
+      </h2>
+      <span class="text-xs text-on-surface-variant">Radius Kota Bandar Lampung</span>
+    </div>
+    <div id="admin-map" class="h-64 w-full rounded-xl border border-[#E2E8F0] z-10"></div>
+  </div>
+
+  <!-- Antrean Verifikasi & Disposisi Dinas -->
+  <div class="bg-surface-container-lowest p-6 rounded-2xl border border-[#E2E8F0] shadow-sm space-y-4">
+    <h2 class="text-sm font-extrabold text-primary uppercase tracking-wider flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
+      <span class="material-symbols-outlined text-on-tertiary-container">pending_actions</span>
+      Antrean Verifikasi Masuk (Admin Dispatcher)
+    </h2>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-surface-container text-primary font-bold">
+          <tr>
+            <th class="p-3">No. Tiket</th>
+            <th class="p-3">Kategori</th>
+            <th class="p-3">Judul & Lokasi</th>
+            <th class="p-3">Waktu Masuk</th>
+            <th class="p-3 text-right">Aksi Verifikasi / Disposisi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#E2E8F0]" id="admin-table-body">
+          <tr>
+            <td class="p-3 font-mono font-bold text-primary">#BDL-2026-1044</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-slate-100 font-semibold text-[10px]">Jalan Berlubang</span></td>
+            <td class="p-3">
+              <strong class="text-primary block">Lubang Dalam Sebelah Halte Teknokrat</strong>
+              <span class="text-slate-500 text-[10px]">Jl. ZA Pagar Alam No. 9</span>
+            </td>
+            <td class="p-3 text-slate-500 text-[10px]">10 Menit Lalu</td>
+            <td class="p-3 text-right space-x-1.5">
+              <button onclick="adminVerify('#BDL-2026-1044')" class="px-2.5 py-1.5 bg-secondary text-white font-bold rounded-lg text-[10px] hover:bg-on-secondary-container transition">
+                Diverifikasi & Disposisi PU
+              </button>
+              <button onclick="adminReject('#BDL-2026-1044')" class="px-2.5 py-1.5 bg-error-container text-error font-bold rounded-lg text-[10px] hover:bg-error hover:text-white transition">
+                Tolak
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const adminMap = L.map('admin-map').setView([-5.4292, 105.2611], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(adminMap);
+
+    // Titik Spasial Contoh di Bandar Lampung
+    const points = [
+      { lat: -5.3812, lng: 105.2571, title: "#BDL-2026-7782: Selesai", color: "green" },
+      { lat: -5.3850, lng: 105.2590, title: "#BDL-2026-1044: Pending", color: "orange" },
+      { lat: -5.4200, lng: 105.2650, title: "#BDL-2026-9102: In Progress", color: "blue" }
+    ];
+
+    points.forEach(p => {
+      L.circleMarker([p.lat, p.lng], {
+        radius: 8,
+        fillColor: p.color,
+        color: "#fff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).addTo(adminMap).bindPopup(`<b>${p.title}</b>`);
+    });
+  });
+
+  function adminVerify(ticket) {
+    alert(`Tiket ${ticket} berhasil diverifikasi! Didelegasikan ke Dinas Pekerjaan Umum dengan Prioritas TINGGI.`);
+    document.getElementById('admin-pending-count').innerText = Math.max(0, parseInt(document.getElementById('admin-pending-count').innerText) - 1);
+  }
+
+  function adminReject(ticket) {
+    const reason = prompt("Masukkan alasan resmi penolakan tiket (Wajib transparansi):", "Bukan wewenang jalan kota (Kementerian PUPR)");
+    if (reason) {
+      alert(`Tiket ${ticket} ditolak dengan alasan: "${reason}". Catatan masuk audit log.`);
+      document.getElementById('admin-pending-count').innerText = Math.max(0, parseInt(document.getElementById('admin-pending-count').innerText) - 1);
+    }
+  }
+</script>
+
+  </main>
+  
+  <footer class="w-full bg-surface-container-lowest border-t border-[#E2E8F0] py-space-md mt-auto shadow-[0_-1px_6px_rgba(0,0,0,0.02)]">
+    <div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin grid grid-cols-2 md:grid-cols-[auto_1fr_auto] items-center gap-space-md">
+      <!-- Kiri: Pemda Kota Bandar Lampung -->
+      <div class="order-1 flex items-center gap-space-sm justify-self-start">
+        <img alt="Logo Pemda Kota Bandar Lampung" src="/static/img/logo_pemda.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+        <div class="flex flex-col text-left">
+          <span class="font-label-sm text-[11px] text-on-surface font-bold uppercase tracking-tight">Pemerintah Kota</span>
+          <span class="font-label-md text-xs text-primary font-bold tracking-tight">Bandar Lampung</span>
+        </div>
+      </div>
+
+      <!-- Tengah: Teks Hak Cipta Persis PRD FR-09 -->
+      <p class="order-3 md:order-2 col-span-2 md:col-span-1 text-center font-body-sm text-xs sm:text-sm font-medium text-slate-600">
+        Copyright©2026 by Mutia Afif Ramadhani dan Dr. Erliyan Redy Susanto, M.Kom
+      </p>
+
+      <!-- Kanan: Universitas Teknokrat Indonesia (UTI) -->
+      <div class="order-2 md:order-3 flex items-center gap-space-sm justify-self-end">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="font-label-sm text-[11px] text-secondary font-bold uppercase tracking-wide">Kampus Juara - UTI</span>
+          <span class="font-label-sm text-[10px] text-on-surface-variant">Universitas Teknokrat Indonesia</span>
+        </div>
+        <img alt="Logo Universitas Teknokrat Indonesia" src="/static/img/logo_uti.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

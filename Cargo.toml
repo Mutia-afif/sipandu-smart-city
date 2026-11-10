@@ -1,0 +1,50 @@
+[package]
+name = "sipandu-smart-city"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mutia Afif Ramadhani <24311124>", "Dr. Erliyan Redy Susanto, M.Kom"]
+description = "Sistem Pengaduan dan Penanganan Infrastruktur Kota Terpadu - Kota Bandar Lampung (UTS PPSI)"
+
+[dependencies]
+# Web Framework & Async Runtime
+axum = { version = "0.7", features = ["multipart", "macros"] }
+tokio = { version = "1.38", features = ["full"] }
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "trace", "timeout"] }
+tower_governor = "0.4"
+
+# Database & SQLx
+sqlx = { version = "0.7", features = [
+    "runtime-tokio-rustls",
+    "postgres",
+    "uuid",
+    "chrono",
+    "json",
+    "migrate"
+] }
+
+# Serialization & Data
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.8", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Templating
+askama = { version = "0.12", features = ["with-axum"] }
+askama_axum = "0.4"
+
+# Security & Password
+argon2 = "0.5"
+rand = "0.8"
+
+# Logging & Tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Image & EXIF Sanitization
+image = "0.25"
+infer = "0.16"
+
+# Environment
+dotenvy = "0.15"
+

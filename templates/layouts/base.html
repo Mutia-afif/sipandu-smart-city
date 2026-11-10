@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SIPANDU Smart City - Kota Bandar Lampung{% endblock %}</title>
+  
+  <!-- Tailwind CSS CDN with configuration from SKILL.md -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f8f9ff",
+            "primary": "#002046",
+            "tertiary": "#311c00",
+            "secondary-fixed-dim": "#59dbc7",
+            "tertiary-fixed-dim": "#ffb95f",
+            "surface-container-high": "#dce9ff",
+            "surface-dim": "#cbdbf5",
+            "inverse-on-surface": "#eaf1ff",
+            "inverse-primary": "#aec7f7",
+            "secondary": "#006b5f",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#005047",
+            "on-primary-fixed-variant": "#2e476f",
+            "tertiary-container": "#4e2f00",
+            "on-tertiary-fixed-variant": "#653e00",
+            "inverse-surface": "#213145",
+            "on-tertiary-container": "#dd8d00",
+            "surface-container-highest": "#d3e4fe",
+            "primary-fixed-dim": "#aec7f7",
+            "surface-container": "#e5eeff",
+            "outline-variant": "#c4c6cf",
+            "on-secondary-fixed": "#00201c",
+            "error": "#ba1a1a",
+            "surface-container-low": "#eff4ff",
+            "secondary-fixed": "#79f7e3",
+            "on-tertiary-fixed": "#2a1700",
+            "surface-tint": "#465f88",
+            "on-primary-container": "#87a0cd",
+            "on-secondary-container": "#006f63",
+            "surface-variant": "#d3e4fe",
+            "on-secondary": "#ffffff",
+            "error-container": "#ffdad6",
+            "background": "#f8f9ff",
+            "tertiary-fixed": "#ffddb8",
+            "outline": "#74777f",
+            "primary-fixed": "#d6e3ff",
+            "secondary-container": "#76f4e0",
+            "on-surface": "#0b1c30",
+            "surface": "#f8f9ff",
+            "on-background": "#0b1c30",
+            "on-primary-fixed": "#001b3d",
+            "on-error": "#ffffff",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#44474e",
+            "on-error-container": "#93000a",
+            "primary-container": "#1b365d"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "margin": "2rem",
+            "margin-mobile": "1rem",
+            "gutter": "1.5rem",
+            "gutter-mobile": "1rem"
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts Inter & Material Symbols -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans">
+
+  <!-- Header Navigasi Dinamis -->
+  <header class="bg-surface-container-lowest/95 backdrop-blur-xl border-b border-[#E2E8F0] sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand & Kemitraan: Pemda Kota Bandar Lampung + Universitas Teknokrat Indonesia -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="/" class="flex items-center gap-2.5">
+          <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung"
+               class="h-11 sm:h-12 w-auto object-contain hover:scale-105 transition-transform">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary">SIPANDU</span>
+            <span class="text-[10px] text-on-surface-variant -mt-0.5 font-medium">Kota Bandar Lampung</span>
+          </div>
+        </a>
+
+        <!-- Divider & Logo Teknokrat di Header -->
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-[#E2E8F0]">
+          <a href="https://teknokrat.ac.id" target="_blank" rel="noopener" class="flex items-center gap-2">
+            <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia"
+                 class="h-10 w-auto object-contain hover:scale-105 transition-transform">
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold text-secondary uppercase tracking-tight">Universitas Teknokrat Indonesia</span>
+              <span class="text-[9px] text-on-surface-variant -mt-0.5">Kampus Juara &bull; Riset PPSI</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Navigation links / user bar -->
+      <nav class="flex items-center gap-2 sm:gap-3">
+        {% block nav_items %}
+        <a href="/warga" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Portal Warga</a>
+        <a href="/petugas" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Petugas Lapangan</a>
+        <a href="/admin" class="text-xs sm:text-sm font-semibold text-primary hover:text-secondary px-2.5 py-1.5 rounded-lg transition">Command Center</a>
+        <a href="/login" class="text-xs sm:text-sm font-bold bg-primary text-white px-3.5 py-2 rounded-lg hover:bg-primary-container transition flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-base">login</span>
+          Masuk
+        </a>
+        {% endblock %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Konten Utama Halaman -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Flash Notification Container (Auto-populated from URL params) -->
+    <div id="flash-message-container" class="hidden mb-6"></div>
+    <script>
+      (function() {
+        const params = new URLSearchParams(window.location.search);
+        const sukses = params.get('sukses');
+        const error = params.get('error');
+        const container = document.getElementById('flash-message-container');
+        if (!container) return;
+
+        const suksesMsgs = {
+          'aduan_terkirim': 'Pengaduan Anda berhasil dikirim dan kini masuk ke antrean verifikasi Admin Pemda.',
+          'tugas_diambil': 'Status tiket berhasil diubah menjadi "Dalam Penanganan".',
+          'tugas_selesai': 'Bukti penanganan berhasil dikirim dan tiket dinyatakan Selesai.',
+          'verifikasi_berhasil': 'Tiket berhasil diverifikasi dan didelegasikan ke dinas penanggung jawab.',
+          'tiket_ditolak': 'Tiket berhasil ditolak dengan catatan alasan resmi.'
+        };
+
+        const errorMsgs = {
+          'konflik_data': 'Peringatan Concurrency: Tiket ini telah diperbarui oleh pengguna lain saat Anda membuka halaman. Perubahan Anda dicegah untuk menghindari konflik data. Silakan muat ulang halaman.',
+          'foto_terlalu_besar': 'Ukuran foto melebihi batas maksimal 5 MB per berkas.',
+          'format_foto_salah': 'Format foto tidak didukung. Harap gunakan berkas JPG, PNG, atau WebP.',
+          'file_bukan_gambar': 'Keamanan: Berkas yang diunggah terdeteksi bukan berkas gambar sah (Magic Bytes MIME tidak valid).',
+          'foto_bukti_wajib': 'Foto bukti penanganan wajib dilampirkan sebelum menutup tiket.',
+          'input_tidak_valid': 'Panjang teks atau format data melampaui batas yang diizinkan sistem.',
+          'alasan_wajib': 'Alasan penolakan wajib diisi secara jelas untuk transparansi warga.',
+          'gagal_kirim': 'Terjadi kendala saat memproses data. Silakan periksa kembali formulir Anda.'
+        };
+
+        if (sukses && suksesMsgs[sukses]) {
+          container.className = 'mb-6 p-4 rounded-xl bg-secondary/10 border border-secondary/20 text-secondary flex items-start gap-3 shadow-xs';
+          container.innerHTML = `
+            <span class="material-symbols-outlined text-2xl text-secondary">check_circle</span>
+            <div class="flex-1 text-xs font-semibold pt-0.5">${suksesMsgs[sukses]}</div>
+            <button onclick="this.parentElement.remove()" class="text-secondary/60 hover:text-secondary cursor-pointer"><span class="material-symbols-outlined text-lg">close</span></button>
+          `;
+        } else if (error && errorMsgs[error]) {
+          container.className = 'mb-6 p-4 rounded-xl bg-error-container border border-error/20 text-on-error-container flex items-start gap-3 shadow-xs';
+          container.innerHTML = `
+            <span class="material-symbols-outlined text-2xl text-error">warning</span>
+            <div class="flex-1 text-xs font-semibold pt-0.5">${errorMsgs[error]}</div>
+            <button onclick="this.parentElement.remove()" class="text-on-error-container/60 hover:text-on-error-container cursor-pointer"><span class="material-symbols-outlined text-lg">close</span></button>
+          `;
+        }
+      })();
+    </script>
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER WAJIB UTS (FR-09 & SKILL.md Bagian 3) -->
+  <footer class="w-full bg-surface-container-lowest border-t border-[#E2E8F0] py-space-md mt-auto shadow-[0_-1px_6px_rgba(0,0,0,0.02)]">
+    <div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin grid grid-cols-2 md:grid-cols-[auto_1fr_auto] items-center gap-space-md">
+
+      <!-- Kiri: Pemda Kota Bandar Lampung -->
+      <div class="order-1 flex items-center gap-space-sm justify-self-start">
+        <img alt="Logo Pemda Kota Bandar Lampung" src="/static/img/logo_pemda.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+        <div class="flex flex-col text-left">
+          <span class="font-label-sm text-[11px] text-on-surface font-bold uppercase tracking-tight">Pemerintah Kota</span>
+          <span class="font-label-md text-xs text-primary font-bold tracking-tight">Bandar Lampung</span>
+        </div>
+      </div>
+
+      <!-- Tengah (HP: baris bawah): Copyright Persis PRD FR-09 -->
+      <p class="order-3 md:order-2 col-span-2 md:col-span-1 text-center font-body-sm text-xs sm:text-sm font-medium text-slate-600">
+        Copyright©2026 by Mutia Afif Ramadhani dan Dr. Erliyan Redy Susanto, M.Kom
+      </p>
+
+      <!-- Kanan: Universitas Teknokrat Indonesia (UTI) -->
+      <div class="order-2 md:order-3 flex items-center gap-space-sm justify-self-end">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="font-label-sm text-[11px] text-secondary font-bold uppercase tracking-wide">Kampus Juara - UTI</span>
+          <span class="font-label-sm text-[10px] text-on-surface-variant">Universitas Teknokrat Indonesia</span>
+        </div>
+        <img alt="Logo Universitas Teknokrat Indonesia" src="/static/img/logo_uti.png"
+             class="h-[42px] max-md:h-[40px] w-auto object-contain"/>
+      </div>
+
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

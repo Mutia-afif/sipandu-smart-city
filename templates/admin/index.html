@@ -1,0 +1,343 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Command Center Pemda - SIPANDU Kota Bandar Lampung{% endblock %}
+
+{% block nav_items %}
+<span class="text-xs font-bold text-error px-2.5 py-1 bg-error-container text-on-error-container rounded-lg">Admin: {{ admin_nama }}</span>
+<a href="/logout" class="text-xs font-semibold text-error hover:underline px-2">Keluar</a>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Header Baris Atas -->
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-surface-container-lowest p-5 rounded-2xl border border-[#E2E8F0] shadow-xs">
+    <div class="flex items-center gap-4">
+      <img src="/static/img/logo_pemda.png" alt="Logo Pemda Kota Bandar Lampung" class="h-14 w-auto object-contain">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Pemerintah Kota Bandar Lampung</span>
+          <span class="text-slate-300">&bull;</span>
+          <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Teknokrat Smart City Hub</span>
+        </div>
+        <h1 class="text-xl font-extrabold text-primary">Command Center Pengaduan Infrastruktur</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 bg-surface-container-low rounded-xl border border-[#E2E8F0]">
+        <img src="/static/img/logo_uti.png" alt="Logo Universitas Teknokrat Indonesia" class="h-8 w-auto object-contain">
+        <div class="flex flex-col text-left">
+          <span class="text-[10px] font-bold text-secondary">UTI Kampus Juara</span>
+          <span class="text-[9px] text-on-surface-variant">Riset PPSI 2026</span>
+        </div>
+      </div>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/10 text-secondary text-xs font-bold rounded-full">
+        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+        Sistem Terpadu Aktif
+      </span>
+    </div>
+  </div>
+
+  <!-- 4 Kartu KPI Utama -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
+      <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Total Aduan Masuk</span>
+      <span class="text-2xl font-bold text-primary mt-1 block">{{ kpi_total }}</span>
+    </div>
+
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-on-tertiary-container"></div>
+      <span class="text-[10px] font-bold text-on-tertiary-container uppercase tracking-wider block">Pending Verifikasi</span>
+      <span class="text-2xl font-bold text-on-tertiary-container mt-1 block">{{ kpi_pending }}</span>
+    </div>
+
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-primary-container"></div>
+      <span class="text-[10px] font-bold text-primary-container uppercase tracking-wider block">Dalam Penanganan</span>
+      <span class="text-2xl font-bold text-primary-container mt-1 block">{{ kpi_in_progress }}</span>
+    </div>
+
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-[#E2E8F0] shadow-xs relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-secondary"></div>
+      <span class="text-[10px] font-bold text-secondary uppercase tracking-wider block">Tuntas Diselesaikan</span>
+      <span class="text-2xl font-bold text-secondary mt-1 block">{{ kpi_resolved }}</span>
+    </div>
+  </div>
+
+  <!-- Area Kerja 2 Kolom: Kiri Antrean Verifikasi (6 Kolom), Kanan Peta GIS (6 Kolom) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Kolom Kiri: Antrean Verifikasi & Disposisi Tiket -->
+    <div class="lg:col-span-6 space-y-4">
+      <div class="bg-surface-container-lowest p-5 rounded-xl border border-[#E2E8F0] shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+          <h2 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-secondary">assignment_late</span>
+            Antrean Tiket Menunggu Verifikasi
+          </h2>
+          <span class="text-xs font-mono font-bold text-on-tertiary-container">{{ pending_tickets.len() }} Tiket</span>
+        </div>
+
+        <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+          {% for t in pending_tickets %}
+          <div class="p-3.5 bg-surface-bright rounded-xl border border-[#E2E8F0] hover:border-secondary transition cursor-pointer shadow-2xs ticket-card"
+               data-id="{{ t.id }}"
+               data-no="{{ t.no_aduan }}"
+               data-judul="{{ t.judul }}"
+               data-deskripsi="{{ t.deskripsi }}"
+               data-pelapor="{{ t.pelapor_nama }}"
+               data-kategori="{{ t.kategori_nama }}"
+               data-dinas="{{ t.dinas_default_id }}"
+               data-version="{{ t.version }}"
+               data-lat="{{ t.lat }}"
+               data-lng="{{ t.lng }}"
+               onclick="inspectTicketFromEl(this)">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="font-mono text-xs font-bold text-primary bg-primary-fixed px-1.5 py-0.5 rounded">#{{ t.no_aduan }}</span>
+              <span class="text-[10px] text-on-surface-variant">{{ t.created_at }}</span>
+            </div>
+            <h4 class="text-xs font-bold text-primary truncate">{{ t.judul }}</h4>
+            <p class="text-[11px] text-on-surface-variant line-clamp-1 mt-0.5">{{ t.deskripsi }}</p>
+            <div class="flex items-center justify-between text-[10px] text-on-surface-variant mt-2 pt-1 border-t border-[#E2E8F0]">
+              <span>Kategori: <strong class="text-primary">{{ t.kategori_nama }}</strong></span>
+              <span>Pelapor: {{ t.pelapor_nama }}</span>
+            </div>
+          </div>
+          {% endfor %}
+
+          {% if pending_tickets.len() == 0 %}
+          <div class="text-center py-8 text-xs text-on-surface-variant">
+            Tidak ada antrean tiket yang menunggu verifikasi saat ini.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Inspector Tiket Terpilih (Form Verifikasi & Disposisi / Tolak) -->
+      <div id="inspector-panel" class="bg-surface-container-lowest p-5 rounded-xl border border-[#E2E8F0] shadow-sm space-y-4">
+        <div class="border-b border-[#E2E8F0] pb-2 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-secondary">verified</span>
+            Panel Verifikasi & Disposisi
+          </h3>
+          <span id="inspect-no-aduan" class="font-mono text-xs font-bold text-primary"></span>
+        </div>
+
+        <div id="inspector-empty" class="text-center py-6 text-xs text-on-surface-variant">
+          Pilih tiket dari antrean di atas untuk memverifikasi atau menolak.
+        </div>
+
+        <div id="inspector-form" class="hidden space-y-4">
+          <div>
+            <h4 id="inspect-judul" class="text-sm font-bold text-primary"></h4>
+            <p id="inspect-deskripsi" class="text-xs text-on-surface-variant mt-1"></p>
+            <div class="text-[11px] text-on-surface-variant mt-1">Pelapor: <strong id="inspect-pelapor" class="text-primary"></strong></div>
+          </div>
+
+          <!-- Aksi 1: Verifikasi & Disposisi -->
+          <form method="POST" action="/admin/verify" class="space-y-3 pt-3 border-t border-[#E2E8F0]">
+            <input type="hidden" name="aduan_id" id="verify-aduan-id">
+            <input type="hidden" name="version" id="verify-version">
+
+            <div>
+              <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Dinas Penanggung Jawab</label>
+              <select name="dinas_id" id="verify-dinas" required
+                      class="w-full h-10 px-3 bg-surface-container-low rounded-lg text-xs font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-secondary">
+                {% for d in dinas_list %}
+                <option value="{{ d.id }}">{{ d.nama }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Tingkat Prioritas (Sesuai PRD)</label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="cursor-pointer border border-[#E2E8F0] rounded-lg p-2 text-center text-xs hover:bg-surface-container-low transition has-[:checked]:border-secondary has-[:checked]:bg-surface-container-low font-bold">
+                  <input type="radio" name="prioritas" value="rendah" class="hidden">
+                  <span>Rendah</span>
+                </label>
+                <label class="cursor-pointer border border-[#E2E8F0] rounded-lg p-2 text-center text-xs hover:bg-surface-container-low transition has-[:checked]:border-secondary has-[:checked]:bg-surface-container-low font-bold">
+                  <input type="radio" name="prioritas" value="sedang" checked class="hidden">
+                  <span class="text-on-tertiary-container">Sedang</span>
+                </label>
+                <label class="cursor-pointer border border-[#E2E8F0] rounded-lg p-2 text-center text-xs hover:bg-surface-container-low transition has-[:checked]:border-secondary has-[:checked]:bg-surface-container-low font-bold">
+                  <input type="radio" name="prioritas" value="tinggi" class="hidden">
+                  <span class="text-error">Tinggi</span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full h-10 bg-secondary hover:bg-on-secondary-container text-white rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm">
+              <span class="material-symbols-outlined text-base">task_alt</span>
+              Verifikasi & Delegasikan ke Dinas
+            </button>
+          </form>
+
+          <!-- Aksi 2: Tolak Aduan (Alasan Wajib) -->
+          <form method="POST" action="/admin/reject" class="space-y-2 pt-3 border-t border-[#E2E8F0]">
+            <input type="hidden" name="aduan_id" id="reject-aduan-id">
+            <input type="hidden" name="version" id="reject-version">
+
+            <div>
+              <label class="block text-xs font-bold text-error uppercase tracking-wider mb-1">Alasan Penolakan (Wajib Diisi)</label>
+              <textarea name="alasan_penolakan" rows="2" required placeholder="Contoh: Lokasi berada di luar wilayah kewenangan Pemda Kota Bandar Lampung..."
+                        class="w-full p-2.5 bg-surface-container-low rounded-lg text-xs text-on-surface border border-transparent focus:border-error focus:bg-white focus:outline-none transition"></textarea>
+            </div>
+
+            <button type="submit"
+                    class="w-full h-9 bg-surface-container-low hover:bg-error-container text-error rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition">
+              <span class="material-symbols-outlined text-base">cancel</span>
+              Tolak Aduan Ini
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kolom Kanan: Peta Sebaran GIS Kota Bandar Lampung -->
+    <div class="lg:col-span-6 bg-surface-container-lowest p-5 rounded-xl border border-[#E2E8F0] shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
+        <h2 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-secondary">map</span>
+          Peta Sebaran Aduan GIS (OpenStreetMap)
+        </h2>
+        <span class="text-[10px] text-on-surface-variant">PostGIS Point 4326</span>
+      </div>
+
+      <div id="admin-map" class="w-full h-[520px] rounded-xl border border-[#E2E8F0] overflow-hidden shadow-inner z-10"></div>
+
+      <!-- Legenda Pin Peta -->
+      <div class="flex flex-wrap items-center justify-between text-[11px] bg-surface-container-low p-2.5 rounded-lg text-on-surface-variant gap-2">
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-error inline-block"></span> Kritis / Tinggi</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-on-tertiary-container inline-block"></span> Pending</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-primary inline-block"></span> Penanganan</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-secondary inline-block"></span> Selesai</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel Audit Trail Sistem (Immutable) -->
+  <div class="bg-surface-container-lowest p-5 rounded-xl border border-[#E2E8F0] shadow-sm space-y-3">
+    <div class="border-b border-[#E2E8F0] pb-2 flex items-center justify-between">
+      <h2 class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-secondary">security</span>
+        Audit Trail Log (FR-08: Tidak Dapat Diubah)
+      </h2>
+      <span class="text-xs text-on-surface-variant">Tercatat Atomik di Database</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-surface-container-low text-on-surface-variant uppercase font-semibold text-[10px] tracking-wider">
+          <tr>
+            <th class="p-2.5">Waktu (WIB)</th>
+            <th class="p-2.5">Peran</th>
+            <th class="p-2.5">Aksi</th>
+            <th class="p-2.5">Entitas</th>
+            <th class="p-2.5">Perubahan (Sebelum &rarr; Sesudah)</th>
+            <th class="p-2.5">IP</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#E2E8F0] text-[11px]">
+          {% for log in audit_logs %}
+          <tr class="hover:bg-surface-bright">
+            <td class="p-2.5 font-mono text-on-surface-variant whitespace-nowrap">{{ log.waktu }}</td>
+            <td class="p-2.5 font-bold text-primary">{{ log.role }}</td>
+            <td class="p-2.5 font-semibold text-secondary">{{ log.aksi }}</td>
+            <td class="p-2.5 font-mono">{{ log.entitas }}</td>
+            <td class="p-2.5 text-on-surface-variant">{{ log.deskripsi }}</td>
+            <td class="p-2.5 font-mono text-slate-400 whitespace-nowrap">{{ log.ip }}</td>
+          </tr>
+          {% endfor %}
+
+          {% if audit_logs.len() == 0 %}
+          <tr>
+            <td colspan="6" class="p-4 text-center text-on-surface-variant">Belum ada riwayat audit log tercatat.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let adminMap;
+  function initAdminMap() {
+    adminMap = L.map('admin-map').setView([-5.4292, 105.2611], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(adminMap);
+
+    // Muat pin data titik aduan dari backend
+    fetch('/api/aduan/points')
+      .then(res => res.json())
+      .then(points => {
+        points.forEach(p => {
+          let color = '#006b5f'; // resolved
+          if (p.status === 'pending') color = '#dd8d00';
+          if (p.status === 'in_progress') color = '#002046';
+          if (p.prioritas === 'tinggi') color = '#ba1a1a';
+
+          const marker = L.circleMarker([p.lat, p.lng], {
+            radius: 8,
+            fillColor: color,
+            color: '#ffffff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.85
+          }).addTo(adminMap);
+
+          marker.bindPopup(`
+            <div class="text-xs">
+              <strong class="text-primary block font-mono">#${p.no_aduan}</strong>
+              <p class="font-bold text-on-surface">${p.judul}</p>
+              <p class="text-[10px] text-slate-500 mt-1">Status: ${p.status} | Prioritas: ${p.prioritas}</p>
+            </div>
+          `);
+        });
+      })
+      .catch(e => console.error("Gagal memuat pin titik:", e));
+  }
+
+  function inspectTicketFromEl(el) {
+    const id = el.getAttribute('data-id');
+    const no = el.getAttribute('data-no');
+    const judul = el.getAttribute('data-judul');
+    const deskripsi = el.getAttribute('data-deskripsi');
+    const pelapor = el.getAttribute('data-pelapor');
+    const kategori = el.getAttribute('data-kategori');
+    const dinas = el.getAttribute('data-dinas');
+    const version = el.getAttribute('data-version');
+    const lat = el.getAttribute('data-lat');
+    const lng = el.getAttribute('data-lng');
+    inspectTicket(id, no, judul, deskripsi, pelapor, kategori, dinas, version, lat, lng);
+  }
+
+  function inspectTicket(id, no, judul, deskripsi, pelapor, kategori, dinasDefaultId, version, lat, lng) {
+    document.getElementById('inspector-empty').classList.add('hidden');
+    document.getElementById('inspector-form').classList.remove('hidden');
+
+    document.getElementById('inspect-no-aduan').textContent = '#' + no;
+    document.getElementById('inspect-judul').textContent = judul;
+    document.getElementById('inspect-deskripsi').textContent = deskripsi;
+    document.getElementById('inspect-pelapor').textContent = pelapor;
+
+    document.getElementById('verify-aduan-id').value = id;
+    document.getElementById('verify-version').value = version;
+    document.getElementById('verify-dinas').value = dinasDefaultId;
+
+    document.getElementById('reject-aduan-id').value = id;
+    document.getElementById('reject-version').value = version;
+
+    if (lat && lng && adminMap) {
+      adminMap.setView([parseFloat(lat), parseFloat(lng)], 16);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initAdminMap);
+</script>
+{% endblock %}
+
